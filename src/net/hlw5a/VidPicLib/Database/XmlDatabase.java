@@ -36,7 +36,8 @@ public class XmlDatabase extends Database {
     private String databaseRoot;
 
     public XmlDatabase() {
-        databaseRoot = String.format("%s%sDatabase%s", System.getProperty("user.dir"), File.separator, File.separator);
+    	databaseRoot = String.format("%s%sLibrary%sApplication Support%snet.hlw5a.VidPicLib%s", System.getProperty("user.home"), File.separator, File.separator, File.separator, File.separator);
+        //databaseRoot = String.format("%s%sDatabase%s", System.getProperty("user.dir"), File.separator, File.separator);
         try {
 			LoadModels();
 	        LoadSites();
@@ -175,6 +176,7 @@ public class XmlDatabase extends Database {
         	xmlString.append(String.format("  </model>%n"));
         }
         xmlString.append(String.format("</models>%n"));
+        (new File(databaseRoot + MODELS_FILE)).renameTo(new File(databaseRoot + MODELS_FILE + ".backup"));
         BufferedWriter xmlFile = new BufferedWriter(new FileWriter(databaseRoot + MODELS_FILE));
         xmlFile.write(xmlString.toString());
         xmlFile.close();
@@ -191,6 +193,7 @@ public class XmlDatabase extends Database {
         	xmlString.append(String.format("  </site>%n"));
         }
         xmlString.append(String.format("</sites>%n"));
+        (new File(databaseRoot + SITES_FILE)).renameTo(new File(databaseRoot + SITES_FILE + ".backup"));
         BufferedWriter xmlFile = new BufferedWriter(new FileWriter(databaseRoot + SITES_FILE));
         xmlFile.write(xmlString.toString());
         xmlFile.close();
@@ -211,6 +214,7 @@ public class XmlDatabase extends Database {
         	xmlString.append(String.format("  </set>%n"));
         }
         xmlString.append(String.format("</sets>%n"));
+        (new File(databaseRoot + SETS_FILE)).renameTo(new File(databaseRoot + SETS_FILE + ".backup"));
         BufferedWriter xmlFile = new BufferedWriter(new FileWriter(databaseRoot + SETS_FILE));
         xmlFile.write(xmlString.toString());
         xmlFile.close();
@@ -229,6 +233,7 @@ public class XmlDatabase extends Database {
         }
         xmlString.append(String.format("</passes>%n"));
         BufferedWriter xmlFile = new BufferedWriter(new FileWriter(databaseRoot + PASSES_FILE));
+        (new File(databaseRoot + PASSES_FILE)).renameTo(new File(databaseRoot + PASSES_FILE + ".backup"));
         xmlFile.write(xmlString.toString());
         xmlFile.close();
     }
