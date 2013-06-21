@@ -51,7 +51,7 @@ public class PassNew extends JPanel {
 		add.setFont(VPLStyles.BOLD);
 		add.setPreferredSize(new Dimension(44, VPLStyles.COMBOBOX_HEIGHT));
 		add.addMouseListener(new MouseListener() {
-			public void mouseClicked(MouseEvent e) { Database.getInstance().CreatePass(username.getText(), password.getText(), site); }
+			public void mouseClicked(MouseEvent e) { Database.getInstance().createPass(username.getText(), password.getText(), site); }
 			public void mouseEntered(MouseEvent e) {}
 			public void mouseExited(MouseEvent e) {}
 			public void mousePressed(MouseEvent e) {}

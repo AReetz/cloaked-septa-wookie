@@ -47,6 +47,7 @@ import net.hlw5a.VidPicLib.Database.Database.ObservableObject;
 public class VPLMainProgram extends JPanel implements Runnable, Observer {
 
 	private static final long serialVersionUID = 4232342981332473693L;
+
 	private JTabbedPane tabsPane;
 	private VPLTabPanel tabSitesModels;
 	private VPLTabPanel tabSitesSets;
@@ -183,7 +184,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 	}
 
 	public void mouseClickedPassRem(Pass Pass) {
-        Database.getInstance().DeletePass(Pass);
+        Database.getInstance().deletePass(Pass);
         passPanels.remove(Pass.getId());
         mouseClickedSite(sitePanels.get(activeSite.getId()), activeSite);
 	}
@@ -223,7 +224,6 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 	}
 	
 	public void run() {
-		Database.getInstance();
 		Database.getInstance().addObserver(this);
 		
         final JFrame mainFrame = new JFrame("Video & Picture Library");
@@ -247,7 +247,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
         databaseItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         databaseItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Database.getInstance().Open();
+				Database.getInstance().openDatabase();
 			}
         });
         menu.add(databaseItem);
@@ -295,7 +295,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
         mainFrame.setVisible(true);
         mainFrame.setExtendedState(mainFrame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         mainFrame.addWindowListener(new WindowAdapter() {
-        	public void windowClosed(WindowEvent e) { Database.getInstance().Save(); }
+        	public void windowClosed(WindowEvent e) { Database.getInstance().saveDatabase(); }
         });
 	}
 

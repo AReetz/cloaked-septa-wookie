@@ -84,7 +84,7 @@ public class PassPanel extends JPanel {
 		remove.setFont(VPLStyles.BOLD);
 		remove.setPreferredSize(new Dimension(44, VPLStyles.COMBOBOX_HEIGHT));
 		remove.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) { Database.getInstance().DeletePass(PassPanel.this.pass); }
+			public void mouseClicked(MouseEvent e) { Database.getInstance().deletePass(PassPanel.this.pass); }
 		});
 		
 		this.add(username);

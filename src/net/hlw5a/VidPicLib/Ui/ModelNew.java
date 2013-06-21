@@ -63,7 +63,7 @@ public class ModelNew extends JPanel {
 			public void mouseExited(MouseEvent arg0) { }
 			public void mouseEntered(MouseEvent arg0) { }
 			public void mouseClicked(MouseEvent arg0) { try {
-				Database.getInstance().CreateModel(modelName.getText(), imageName.getText());
+				Database.getInstance().createModel(modelName.getText(), imageName.getText());
 			} catch (IOException e) {
 				e.printStackTrace();
 			} }

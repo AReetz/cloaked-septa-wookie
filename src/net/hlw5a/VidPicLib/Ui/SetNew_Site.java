@@ -133,7 +133,7 @@ public class SetNew_Site extends JPanel {
 				try {
 					Vector<Model> models = new Vector<Model>();
 					for (Object model : setModels.getSelectedValues()) { models.add((Model)model); }
-					Database.getInstance().CreateSet(setName.getText(), (new SimpleDateFormat("yyyy-MM-dd")).parse(setDate.getText()), imageName.getText(), (Model)setMainModel.getItemAt(setMainModel.getSelectedIndex()), models, site);
+					Database.getInstance().createSet(setName.getText(), (new SimpleDateFormat("yyyy-MM-dd")).parse(setDate.getText()), imageName.getText(), (Model)setMainModel.getItemAt(setMainModel.getSelectedIndex()), models, site);
 				}
 				catch (IOException e) { e.printStackTrace(); }
 				catch (ParseException e) {  e.printStackTrace(); }

@@ -1,5 +1,6 @@
 package net.hlw5a.VidPicLib.Database;
 
+import java.awt.Desktop;
 import java.awt.Image;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,7 +25,7 @@ import org.xml.sax.SAXException;
 
 import net.hlw5a.VidPicLib.*;
 
-public class XmlDataSource implements IDataSource {
+public class XmlDatabase extends Database {
 
     private static final String MODELS_FILE = "models.xml";
     private static final String SITES_FILE = "sites.xml";
@@ -34,11 +35,22 @@ public class XmlDataSource implements IDataSource {
 
     private String databaseRoot;
 
-    public XmlDataSource() {
-        databaseRoot = String.format("%s%sLibrary%sApplication Support%snet.hlw5a.VidPicLib%s", System.getProperty("user.home"), File.separator, File.separator, File.separator, File.separator);
+    public XmlDatabase() {
+        databaseRoot = String.format("%s%sDatabase%s", System.getProperty("user.dir"), File.separator, File.separator);
+        try {
+			LoadModels();
+	        LoadSites();
+	        LoadSets();
+	        LoadStates();
+	        LoadPasses();
+        }
+        catch (IOException e) { e.printStackTrace(); }
+        catch (ParserConfigurationException e) { e.printStackTrace(); }
+        catch (SAXException e) { e.printStackTrace(); }
+        catch (ParseException e) { e.printStackTrace(); }
     }
     
-    public void Save() {
+    public void saveDatabase() {
         try {
         	SaveModels();
             SaveSites();
@@ -48,26 +60,9 @@ public class XmlDataSource implements IDataSource {
         catch (IOException e) { e.printStackTrace(); }
     }
     
-    public void Load() {
-        try {
-			LoadModels();
-	        LoadSites();
-	        LoadSets();
-	        LoadStates();
-	        LoadPasses();
-		}
-        catch (IOException e) { e.printStackTrace(); }
-        catch (ParserConfigurationException e) { e.printStackTrace(); }
-        catch (SAXException e) { e.printStackTrace(); }
-        catch (ParseException e) { e.printStackTrace(); }
-    }
-    
-    public void Open() {
-        try {
-        	ProcessBuilder pb = new ProcessBuilder("open", databaseRoot);
-        	pb.start();
-		}
-        catch (IOException e) { e.printStackTrace(); }
+    public void openDatabase() {
+        try { Desktop.getDesktop().open(new File(databaseRoot)); }
+		catch (IOException e) { e.printStackTrace(); }
     }
     
     public Image getImage(String imageName) throws IOException {
@@ -88,7 +83,7 @@ public class XmlDataSource implements IDataSource {
             String name = getChildText(modelElement, "name").firstElement();
             String imageName = getChildText(modelElement, "image").firstElement();
             Image image = ImageIO.read(new File(databaseRoot + imageName));
-            Database.getInstance().addModel(id, new Model(id, name, imageName, image));
+            models.put(id, new Model(id, name, imageName, image));
         }
     }
 
@@ -107,7 +102,7 @@ public class XmlDataSource implements IDataSource {
             URL url = new URL(getChildText(siteElement, "url").firstElement());
             String imageName = getChildText(siteElement, "image").firstElement();
             Image image = ImageIO.read(new File(databaseRoot + imageName));
-            Database.getInstance().addSite(id, new Site(id, name, url, imageName, image));
+            sites.put(id, new Site(id, name, url, imageName, image));
         }
     }
     
@@ -126,12 +121,12 @@ public class XmlDataSource implements IDataSource {
             Date date = (new SimpleDateFormat("yyyy-MM-dd")).parse(getChildText(setElement, "date").firstElement());
             String imageName = getChildText(setElement, "image").firstElement();
             Image image = ImageIO.read(new File(databaseRoot + imageName));
-            Model mainModel = Database.getInstance().getModel(Integer.parseInt(getChildText(setElement, "mainmodel").firstElement()));
+            Model mainModel = getModel(Integer.parseInt(getChildText(setElement, "mainmodel").firstElement()));
             Vector<Model> models = new Vector<Model>();
             for (String str : getChildText(setElement, "model")) {
-            	models.add(Database.getInstance().getModel(Integer.parseInt(str)));
+            	models.add(getModel(Integer.parseInt(str)));
             }
-            Database.getInstance().addSet(id, new Set(id, name, date, imageName, image, mainModel, models, Database.getInstance().getSite(Integer.parseInt(getAttributeText(setElement, "site")))));
+            sets.put(id, new Set(id, name, date, imageName, image, mainModel, models, getSite(Integer.parseInt(getAttributeText(setElement, "site")))));
         }
     }
 
@@ -146,7 +141,7 @@ public class XmlDataSource implements IDataSource {
         	if (xmlStates.item(i).getNodeType() == Node.ELEMENT_NODE) {
             	Element stateElement = (Element) xmlStates.item(i);
             	Integer id = Integer.parseInt(getAttributeText(stateElement,"id"));
-            	Database.getInstance().addState(id, State.valueOf(stateElement.getNodeName()));   
+            	states.put(id, State.valueOf(stateElement.getNodeName()));
         	}
         }
     }
@@ -165,22 +160,21 @@ public class XmlDataSource implements IDataSource {
             String username = getChildText(passElement, "username").firstElement();
             String password = getChildText(passElement, "password").firstElement();
             Date date = (new SimpleDateFormat("yyyy-MM-dd")).parse(getChildText(passElement, "date").firstElement());
-            State state = Database.getInstance().getState(Integer.parseInt(getAttributeText(passElement, "state")));
-            Database.getInstance().addPass(id, new Pass(id, username, password, date, state, Database.getInstance().getSite(Integer.parseInt(getAttributeText(passElement, "site")))));
+            State state = getState(Integer.parseInt(getAttributeText(passElement, "state")));
+            passes.put(id, new Pass(id, username, password, date, state, getSite(Integer.parseInt(getAttributeText(passElement, "site")))));
         }
     }
     
     private void SaveModels() throws IOException {
         StringBuilder xmlString = new StringBuilder(String.format("<?xml version=\"1.0\" encoding=\"utf-8\" ?>%n"));
         xmlString.append(String.format("<models>%n"));
-        for (Model model : Database.getInstance().getModels()) {
+        for (Model model : getModels()) {
         	xmlString.append(String.format("  <model id=\"%d\">%n", model.getId()));
         	xmlString.append(String.format("    <name>%s</name>%n", model.getName()));
         	xmlString.append(String.format("    <image>%s</image>%n", model.getImageName()));
         	xmlString.append(String.format("  </model>%n"));
         }
         xmlString.append(String.format("</models>%n"));
-        (new File(databaseRoot + MODELS_FILE)).renameTo(new File(databaseRoot + MODELS_FILE + ".backup"));
         BufferedWriter xmlFile = new BufferedWriter(new FileWriter(databaseRoot + MODELS_FILE));
         xmlFile.write(xmlString.toString());
         xmlFile.close();
@@ -189,7 +183,7 @@ public class XmlDataSource implements IDataSource {
     private void SaveSites() throws IOException {
         StringBuilder xmlString = new StringBuilder(String.format("<?xml version=\"1.0\" encoding=\"utf-8\" ?>%n"));
         xmlString.append(String.format("<sites>%n"));
-        for (Site site : Database.getInstance().getSites()) {
+        for (Site site : sites.values()) {
         	xmlString.append(String.format("  <site id=\"%d\">%n", site.getId()));
         	xmlString.append(String.format("    <name>%s</name>%n", site.getName()));
         	xmlString.append(String.format("    <url>%s</url>%n", site.getUrl()));
@@ -197,7 +191,6 @@ public class XmlDataSource implements IDataSource {
         	xmlString.append(String.format("  </site>%n"));
         }
         xmlString.append(String.format("</sites>%n"));
-        (new File(databaseRoot + SITES_FILE)).renameTo(new File(databaseRoot + SITES_FILE + ".backup"));
         BufferedWriter xmlFile = new BufferedWriter(new FileWriter(databaseRoot + SITES_FILE));
         xmlFile.write(xmlString.toString());
         xmlFile.close();
@@ -206,7 +199,7 @@ public class XmlDataSource implements IDataSource {
     private void SaveSets() throws IOException {
     	StringBuilder xmlString = new StringBuilder(String.format("<?xml version=\"1.0\" encoding=\"utf-8\" ?>%n"));
         xmlString.append(String.format("<sets>%n"));
-        for (Set set : Database.getInstance().getSets()) {
+        for (Set set : sets.values()) {
         	xmlString.append(String.format("  <set id=\"%d\" site=\"%d\">%n", set.getId(), set.getSite().getId()));
         	xmlString.append(String.format("    <name>%s</name>%n", set.getName()));
         	xmlString.append(String.format("    <date>%s</date>%n", (new SimpleDateFormat("yyyy-MM-dd")).format(set.getDate())));
@@ -218,7 +211,6 @@ public class XmlDataSource implements IDataSource {
         	xmlString.append(String.format("  </set>%n"));
         }
         xmlString.append(String.format("</sets>%n"));
-        (new File(databaseRoot + SETS_FILE)).renameTo(new File(databaseRoot + SETS_FILE + ".backup"));
         BufferedWriter xmlFile = new BufferedWriter(new FileWriter(databaseRoot + SETS_FILE));
         xmlFile.write(xmlString.toString());
         xmlFile.close();
@@ -227,7 +219,7 @@ public class XmlDataSource implements IDataSource {
     private void SavePasses() throws IOException {
         StringBuilder xmlString = new StringBuilder(String.format("<?xml version=\"1.0\" encoding=\"utf-8\" ?>%n"));
         xmlString.append(String.format("<passes>%n"));
-        for (Pass pass : Database.getInstance().getPasses()) {
+        for (Pass pass : passes.values()) {
         	
         	xmlString.append(String.format("  <pass id=\"%d\" site=\"%d\" state=\"%d\">%n", pass.getId(), pass.getSite().getId(), pass.getState().ordinal() + 1));
         	xmlString.append(String.format("    <username>%s</username>%n", pass.getUsername()));
@@ -236,7 +228,6 @@ public class XmlDataSource implements IDataSource {
         	xmlString.append(String.format("  </pass>%n"));
         }
         xmlString.append(String.format("</passes>%n"));
-        (new File(databaseRoot + PASSES_FILE)).renameTo(new File(databaseRoot + PASSES_FILE + ".backup"));
         BufferedWriter xmlFile = new BufferedWriter(new FileWriter(databaseRoot + PASSES_FILE));
         xmlFile.write(xmlString.toString());
         xmlFile.close();
