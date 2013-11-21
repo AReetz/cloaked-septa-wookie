@@ -32,13 +32,16 @@ public class XmlDatabase extends Database {
     private static final String SETS_FILE = "sets.xml";
     private static final String STATES_FILE = "states.xml";
     private static final String PASSES_FILE = "passes.xml";
+    private static final String SETTINGS_FILE = "settings.xml";
 
     private String databaseRoot;
 
     public XmlDatabase() {
-    	databaseRoot = String.format("%s%sLibrary%sApplication Support%snet.hlw5a.VidPicLib%s", System.getProperty("user.home"), File.separator, File.separator, File.separator, File.separator);
-        //databaseRoot = String.format("%s%sDatabase%s", System.getProperty("user.dir"), File.separator, File.separator);
+    	//databaseRoot = String.format("%s%sLibrary%sApplication Support%snet.hlw5a.VidPicLib%s", System.getProperty("user.home"), File.separator, File.separator, File.separator, File.separator);
+        //databaseRoot = String.format("%s%sDatabase%s", System.getProperty("user.dir"), File.separator, File.separator);\
+    	databaseRoot = "C:\\Users\\Adrian\\Documents\\Source Code\\VidPicLib2\\VidPicLibGUI\\Database\\";
         try {
+        	LoadSettings();
 			LoadModels();
 	        LoadSites();
 	        LoadSets();
@@ -164,6 +167,18 @@ public class XmlDatabase extends Database {
             State state = getState(Integer.parseInt(getAttributeText(passElement, "state")));
             passes.put(id, new Pass(id, username, password, date, state, getSite(Integer.parseInt(getAttributeText(passElement, "site")))));
         }
+    }
+    
+    private void LoadSettings() throws ParserConfigurationException, SAXException, IOException
+    {
+    	File xmlFile = new File(databaseRoot + SETTINGS_FILE);
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document doc = db.parse(xmlFile);
+
+		NodeList xmlContentfolder = doc.getElementsByTagName("contentfolder");
+		String contentfolder = getAttributeText((Element) xmlContentfolder.item(0), "value");
+		settings.put("contentfolder", contentfolder);
     }
     
     private void SaveModels() throws IOException {

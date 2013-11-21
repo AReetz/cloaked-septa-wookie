@@ -1,5 +1,6 @@
 package net.hlw5a.VidPicLib.Ui;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -28,14 +29,14 @@ public class SetPanel extends JPanel {
 		return set.getId();
 	}
 	
-	public SetPanel(Set set) {
+	public SetPanel(Set set, boolean videoExists) {
 		this.set = set;
 				
 		JLabel id = new JLabel(String.valueOf(this.set.getId()), JLabel.CENTER);
 		id.setFont(VPLStyles.SMALL);
 		id.setPreferredSize(new Dimension(VPLStyles.TEXTFIELD_HEIGHT, VPLStyles.TEXTFIELD_HEIGHT));
 		id.setOpaque(true);
-		id.setBackground(VPLStyles.TEXT_BACKGROUND);
+		if (videoExists) { id.setBackground(VPLStyles.TEXT_BACKGROUND); } else { id.setBackground(Color.red); }
 		
 		JLabel name = new JLabel(this.set.getName(), JLabel.CENTER);
 		name.setFont(VPLStyles.BOLD);

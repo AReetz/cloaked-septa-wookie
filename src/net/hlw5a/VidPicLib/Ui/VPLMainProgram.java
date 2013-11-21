@@ -10,6 +10,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -19,6 +21,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.TreeMap;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -215,7 +218,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
         }
         
         for (final Set set : Database.getInstance().getSets()) {
-        	final SetPanel comp = new SetPanel(set);
+        	final SetPanel comp = new SetPanel(set, DoesVideoExist(set));
         	comp.addMouseListener(new MouseAdapter() {
         		public void mouseClicked(MouseEvent e) { VPLMainProgram.this.mouseClickedSet(comp, set); }
         	});
@@ -298,6 +301,39 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
         	public void windowClosed(WindowEvent e) { Database.getInstance().saveDatabase(); }
         });
 	}
+	
+	private Boolean DoesVideoExist(final Set set) {
+		File rootDirectory = new File(Database.getInstance().getSetting("contentfolder"));
+		
+		FilenameFilter siteFilter = new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				String siteName = set.getSite().getName();
+				if (name.contains(siteName)) { return true; } else { return false; }
+			}
+		};
+		
+		FilenameFilter setFilter = new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				Pattern setNumberPattern = Pattern.compile("[\\D]+");
+				String modelName = set.getMainModel().getName();
+				String setNumber = setNumberPattern.matcher(set.getName()).replaceAll("");
+				if (name.contains(modelName) && name.contains(setNumber)) {
+					return true;
+					} else {
+						return false; 
+						}
+			}
+		};
+		
+		File[] subDirectories = rootDirectory.listFiles(siteFilter);
+		if (subDirectories.length > 0) {
+			File[] files = subDirectories[0].listFiles(setFilter);
+			if (files.length > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public void update(Observable arg0, Object observableObject) {
 		Action action = ((ObservableObject)observableObject).getAction();
@@ -313,7 +349,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 		}
 		else if (action == Action.CREATE_SET) {
 			final Set set = (Set)object;
-        	final SetPanel comp = new SetPanel(set);
+        	final SetPanel comp = new SetPanel(set, DoesVideoExist(set));
         	comp.addMouseListener(new MouseAdapter() {
         		public void mouseClicked(MouseEvent e) { VPLMainProgram.this.mouseClickedSet(comp, set); }
         	});

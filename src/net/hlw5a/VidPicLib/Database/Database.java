@@ -53,6 +53,7 @@ public abstract class Database extends Observable {
     protected Map<Integer, Set> sets = new TreeMap<Integer, Set>();
     protected Map<Integer, Pass> passes = new TreeMap<Integer, Pass>();
     protected Map<Integer, State> states = new TreeMap<Integer, State>();
+    protected Map<String, String> settings = new TreeMap<String, String>();
 
     public Model getModel(Integer Id) { return models.get(Id); }
     public Vector<Model> getModels() { return new Vector<Model>(models.values()); }
@@ -68,6 +69,8 @@ public abstract class Database extends Observable {
     
     public State getState(Integer Id) { return states.get(Id); }
     public Vector<State> getStates() { return new Vector<State>(states.values()); }
+    
+    public String getSetting(String setting) { return settings.get(setting); }
 
     public abstract Image getImage(String imageName) throws IOException;
     public abstract void openDatabase();
