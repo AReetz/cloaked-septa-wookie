@@ -231,7 +231,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 		
         final JFrame mainFrame = new JFrame("Video & Picture Library");
         
-		com.apple.eawt.Application application = com.apple.eawt.Application.getApplication();
+		/*com.apple.eawt.Application application = com.apple.eawt.Application.getApplication();
 		application.setQuitHandler(new QuitHandler() {
 			public void handleQuitRequestWith(QuitEvent arg0, QuitResponse arg1) { mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING)); }
 		});
@@ -242,7 +242,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 			application.setDockIconImage(icon);
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("Options");

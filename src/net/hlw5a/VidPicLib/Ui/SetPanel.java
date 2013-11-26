@@ -38,7 +38,7 @@ public class SetPanel extends JPanel {
 		id.setOpaque(true);
 		if (videoExists) { id.setBackground(VPLStyles.TEXT_BACKGROUND); } else { id.setBackground(Color.red); }
 		
-		JLabel name = new JLabel(this.set.getName(), JLabel.CENTER);
+		final JLabel name = new JLabel(this.set.getName(), JLabel.CENTER);
 		name.setFont(VPLStyles.BOLD);
 		name.setPreferredSize(new Dimension(165, VPLStyles.TEXTFIELD_HEIGHT));
 		name.setOpaque(true);
@@ -46,8 +46,8 @@ public class SetPanel extends JPanel {
 		name.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
-					StringSelection selection = new StringSelection(SetPanel.this.set.getName().toString());
-					Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection, selection);
+					if (name.getText() == SetPanel.this.set.getName()) name.setText(SetPanel.this.set.getNumber());
+					else if (name.getText() == SetPanel.this.set.getNumber()) name.setText(SetPanel.this.set.getName());
 				}
 			}
 		});

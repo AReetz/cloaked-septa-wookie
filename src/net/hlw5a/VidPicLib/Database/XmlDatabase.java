@@ -38,8 +38,8 @@ public class XmlDatabase extends Database {
 
     public XmlDatabase() {
     	//databaseRoot = String.format("%s%sLibrary%sApplication Support%snet.hlw5a.VidPicLib%s", System.getProperty("user.home"), File.separator, File.separator, File.separator, File.separator);
-        //databaseRoot = String.format("%s%sDatabase%s", System.getProperty("user.dir"), File.separator, File.separator);\
-    	databaseRoot = "C:\\Users\\Adrian\\Documents\\Source Code\\VidPicLib2\\VidPicLibGUI\\Database\\";
+        //databaseRoot = String.format("%s%sDatabase%s", System.getProperty("user.dir"), File.separator, File.separator);
+    	databaseRoot = String.format("C:\\Users\\Adrian\\Documents\\Source Code\\VidPicLib2\\VidPicLibGUI\\Database\\");
         try {
         	LoadSettings();
 			LoadModels();
@@ -122,6 +122,7 @@ public class XmlDatabase extends Database {
         	Element setElement = (Element) xmlSets.item(i);
             Integer id = Integer.parseInt(getAttributeText(setElement, "id"));
             String name = getChildText(setElement, "name").firstElement();
+            String number = getChildText(setElement, "number").firstElement();
             Date date = (new SimpleDateFormat("yyyy-MM-dd")).parse(getChildText(setElement, "date").firstElement());
             String imageName = getChildText(setElement, "image").firstElement();
             Image image = ImageIO.read(new File(databaseRoot + imageName));
@@ -130,7 +131,7 @@ public class XmlDatabase extends Database {
             for (String str : getChildText(setElement, "model")) {
             	models.add(getModel(Integer.parseInt(str)));
             }
-            sets.put(id, new Set(id, name, date, imageName, image, mainModel, models, getSite(Integer.parseInt(getAttributeText(setElement, "site")))));
+            sets.put(id, new Set(id, name, number, date, imageName, image, mainModel, models, getSite(Integer.parseInt(getAttributeText(setElement, "site")))));
         }
     }
 
@@ -176,9 +177,7 @@ public class XmlDatabase extends Database {
 		DocumentBuilder db = dbf.newDocumentBuilder();
 		Document doc = db.parse(xmlFile);
 
-		NodeList xmlContentfolder = doc.getElementsByTagName("contentfolder");
-		String contentfolder = getAttributeText((Element) xmlContentfolder.item(0), "value");
-		settings.put("contentfolder", contentfolder);
+		settings.put("contentfolder", getAttributeText((Element) doc.getElementsByTagName("contentfolder").item(0), "value"));		
     }
     
     private void SaveModels() throws IOException {
@@ -220,6 +219,7 @@ public class XmlDatabase extends Database {
         for (Set set : sets.values()) {
         	xmlString.append(String.format("  <set id=\"%d\" site=\"%d\">%n", set.getId(), set.getSite().getId()));
         	xmlString.append(String.format("    <name>%s</name>%n", set.getName()));
+        	xmlString.append(String.format("    <number>%s</number>%n", set.getNumber()));
         	xmlString.append(String.format("    <date>%s</date>%n", (new SimpleDateFormat("yyyy-MM-dd")).format(set.getDate())));
         	xmlString.append(String.format("    <mainmodel>%d</mainmodel>%n", set.getMainModel().getId()));
         	for (Model model : set.getModels()) {
@@ -247,8 +247,8 @@ public class XmlDatabase extends Database {
         	xmlString.append(String.format("  </pass>%n"));
         }
         xmlString.append(String.format("</passes>%n"));
-        BufferedWriter xmlFile = new BufferedWriter(new FileWriter(databaseRoot + PASSES_FILE));
         (new File(databaseRoot + PASSES_FILE)).renameTo(new File(databaseRoot + PASSES_FILE + ".backup"));
+        BufferedWriter xmlFile = new BufferedWriter(new FileWriter(databaseRoot + PASSES_FILE));
         xmlFile.write(xmlString.toString());
         xmlFile.close();
     }

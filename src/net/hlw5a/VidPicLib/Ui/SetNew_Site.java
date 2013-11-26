@@ -53,6 +53,16 @@ public class SetNew_Site extends JPanel {
 			public void focusGained(FocusEvent arg0) { if (setName.getText().equals("set name")) setName.setText(""); }
 		});
 		
+		final JTextField setNumber = new JTextField("set number");
+		setNumber.setFont(VPLStyles.ITALIC);
+		setNumber.setPreferredSize(new Dimension(VPLStyles.COMPONENT_WIDTH, VPLStyles.TEXTFIELD_HEIGHT));
+		setNumber.setOpaque(true);
+		setNumber.setBackground(VPLStyles.TEXT_BACKGROUND);
+		setNumber.addFocusListener(new FocusListener() {
+			public void focusLost(FocusEvent arg0) { if (setNumber.getText().equals("")) setNumber.setText("set name"); }
+			public void focusGained(FocusEvent arg0) { if (setNumber.getText().equals("set name")) setNumber.setText(""); }
+		});
+		
 		final JFormattedTextField setDate = new JFormattedTextField("1999-12-31");
 		MaskFormatter df;
 		try {
@@ -117,7 +127,7 @@ public class SetNew_Site extends JPanel {
 			}
 		});
 		JScrollPane setModelsScroll = new JScrollPane(setModels);
-		setModelsScroll.setPreferredSize(new Dimension(VPLStyles.COMPONENT_WIDTH, 198));
+		setModelsScroll.setPreferredSize(new Dimension(VPLStyles.COMPONENT_WIDTH, 166/*198*/));
 		
 		JButton save = new JButton("save set");
 		save.setFont(VPLStyles.ITALIC);
@@ -133,7 +143,7 @@ public class SetNew_Site extends JPanel {
 				try {
 					Vector<Model> models = new Vector<Model>();
 					for (Object model : setModels.getSelectedValues()) { models.add((Model)model); }
-					Database.getInstance().createSet(setName.getText(), (new SimpleDateFormat("yyyy-MM-dd")).parse(setDate.getText()), imageName.getText(), (Model)setMainModel.getItemAt(setMainModel.getSelectedIndex()), models, site);
+					Database.getInstance().createSet(setName.getText(), setNumber.getText(), (new SimpleDateFormat("yyyy-MM-dd")).parse(setDate.getText()), imageName.getText(), (Model)setMainModel.getItemAt(setMainModel.getSelectedIndex()), models, site);
 				}
 				catch (IOException e) { e.printStackTrace(); }
 				catch (ParseException e) {  e.printStackTrace(); }
@@ -142,6 +152,7 @@ public class SetNew_Site extends JPanel {
 		
 		this.add(id);
 		this.add(setName);
+		this.add(setNumber);
 		this.add(setDate);
 		this.add(setMainModel);
 		this.add(setModelsScroll);

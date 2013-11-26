@@ -51,6 +51,16 @@ public class SetNew_Model extends JPanel {
 			public void focusGained(FocusEvent arg0) { if (setName.getText().equals("set name")) setName.setText(""); }
 		});
 		
+		final JTextField setNumber = new JTextField("set number");
+		setNumber.setFont(VPLStyles.ITALIC);
+		setNumber.setPreferredSize(new Dimension(VPLStyles.COMPONENT_WIDTH, VPLStyles.TEXTFIELD_HEIGHT));
+		setNumber.setOpaque(true);
+		setNumber.setBackground(VPLStyles.TEXT_BACKGROUND);
+		setNumber.addFocusListener(new FocusListener() {
+			public void focusLost(FocusEvent arg0) { if (setNumber.getText().equals("")) setName.setText("set name"); }
+			public void focusGained(FocusEvent arg0) { if (setNumber.getText().equals("set name")) setName.setText(""); }
+		});
+		
 		final JFormattedTextField setDate = new JFormattedTextField("1999-12-31");
 		MaskFormatter df;
 		try {
@@ -124,7 +134,7 @@ public class SetNew_Model extends JPanel {
 				try {
 					Vector<Model> models = new Vector<Model>();
 					for (Object model : setModels.getSelectedValues()) { models.add((Model)model); }
-					Database.getInstance().createSet(setName.getText(), (new SimpleDateFormat("yyyy-MM-dd")).parse(setDate.getText()), imageName.getText(), model, models, (Site)siteName.getItemAt(siteName.getSelectedIndex()));
+					Database.getInstance().createSet(setName.getText(), setNumber.getText(), (new SimpleDateFormat("yyyy-MM-dd")).parse(setDate.getText()), imageName.getText(), model, models, (Site)siteName.getItemAt(siteName.getSelectedIndex()));
 				}
 				catch (IOException e) { e.printStackTrace(); }
 				catch (ParseException e) {  e.printStackTrace(); }
@@ -133,6 +143,7 @@ public class SetNew_Model extends JPanel {
 		
 		this.add(id);
 		this.add(setName);
+		this.add(setNumber);
 		this.add(setDate);
 		this.add(setMainModel);
 		this.add(setModelsScroll);

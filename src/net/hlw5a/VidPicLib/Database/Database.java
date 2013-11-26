@@ -93,9 +93,9 @@ public abstract class Database extends Observable {
     	notifyObservers(new ObservableObject(Action.CREATE_MODEL, model));
     }
     
-    public void createSet(String setName, Date date, String imageName, Model mainModel, Vector<Model> models, Site site) throws IOException {
+    public void createSet(String setName, String setNumber, Date date, String imageName, Model mainModel, Vector<Model> models, Site site) throws IOException {
     	Integer id = Collections.max(sets.keySet()) + 1;
-    	Set set = new Set(id, setName, date, imageName, getImage(imageName), mainModel, models, site);
+    	Set set = new Set(id, setNumber, setName, date, imageName, getImage(imageName), mainModel, models, site);
     	sets.put(id, set);
     	setChanged();
     	notifyObservers(new ObservableObject(Action.CREATE_SET, set));

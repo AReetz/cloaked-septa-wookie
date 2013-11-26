@@ -101,7 +101,7 @@ public class MysqlDatabase extends Database {
         		models.add(getModel(modelsResult.getInt("modelid")));
         	}
         	existingSets.add(setsResult.getInt("id"));
-    		sets.put(setsResult.getInt("id"), new Set(setsResult.getInt("id"), setsResult.getString("name"), setsResult.getDate("date"), null, ImageIO.read(setsResult.getBlob("image").getBinaryStream()), getModel(setsResult.getInt("mainmodel")), models, getSite(setsResult.getInt("site"))));
+    		sets.put(setsResult.getInt("id"), new Set(setsResult.getInt("id"), setsResult.getString("name"), setsResult.getString("number"), setsResult.getDate("date"), null, ImageIO.read(setsResult.getBlob("image").getBinaryStream()), getModel(setsResult.getInt("mainmodel")), models, getSite(setsResult.getInt("site"))));
     	}
     }
 
