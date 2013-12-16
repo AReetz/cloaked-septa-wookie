@@ -13,6 +13,7 @@ import java.util.Vector;
 
 import javax.imageio.ImageIO;
 
+import net.hlw5a.VidPicLib.Key2Map;
 import net.hlw5a.VidPicLib.Model;
 import net.hlw5a.VidPicLib.Pass;
 import net.hlw5a.VidPicLib.Set;
@@ -26,6 +27,10 @@ public abstract class Database extends Observable {
 		CREATE_SET,
 		CREATE_PASS,
 		DELETE_PASS
+	};
+	
+	public enum Mapping {
+		COMPLETED
 	};
 
 	public class ObservableObject {
@@ -54,6 +59,7 @@ public abstract class Database extends Observable {
     protected Map<Integer, Pass> passes = new TreeMap<Integer, Pass>();
     protected Map<Integer, State> states = new TreeMap<Integer, State>();
     protected Map<String, String> settings = new TreeMap<String, String>();
+    protected Key2Map<Model, Site, Boolean> mappingsModelSite = new Key2Map<Model, Site, Boolean>();
 
     public Model getModel(Integer Id) { return models.get(Id); }
     public Vector<Model> getModels() { return new Vector<Model>(models.values()); }
@@ -69,6 +75,9 @@ public abstract class Database extends Observable {
     
     public State getState(Integer Id) { return states.get(Id); }
     public Vector<State> getStates() { return new Vector<State>(states.values()); }
+    
+    public Boolean getModelSiteMapping(Model model, Site site) { Boolean ret = mappingsModelSite.get(model, site); if (ret == null) return false; else return ret; }
+    public void setModelSiteMapping(Model model, Site site, Boolean value) { if (value) mappingsModelSite.put(model, site, value); else mappingsModelSite.remove(model, site); }
     
     public String getSetting(String setting) { return settings.get(setting); }
 

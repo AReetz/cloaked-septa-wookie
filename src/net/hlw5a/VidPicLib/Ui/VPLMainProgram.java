@@ -57,6 +57,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 	private VPLTabPanel tabSitesPasses;
 	private VPLTabPanel tabModelsSets;
 	private Map<Integer, ModelPanel> modelPanels = new TreeMap<Integer, ModelPanel>();
+	private Map<Integer, ModelDetail> modelDetails = new TreeMap<Integer, ModelDetail>();
 	private Map<Integer, SitePanel> sitePanels = new TreeMap<Integer, SitePanel>();
 	private Map<Integer, SetPanel> setPanels = new TreeMap<Integer, SetPanel>();
 	private Map<Integer, PassPanel> passPanels = new TreeMap<Integer, PassPanel>();
@@ -127,7 +128,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 	        }
 			Collections.sort(tmpList2, new DataSort.Models.ByName());
 			for (Model model: tmpList2) {
-        		activeTab.add(modelPanels.get(model.getId()), VPLTabPanel.RIGHT);
+        		activeTab.add(modelDetails.get(model.getId()), VPLTabPanel.RIGHT);
 	        }
 			activeTab.add(new ModelNew(), VPLTabPanel.RIGHT);
 			tabsPane.repaint();
@@ -199,6 +200,10 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
         		public void mouseClicked(MouseEvent e) { VPLMainProgram.this.mouseClickedModel(comp, model); }
         	});
         	modelPanels.put(model.getId(), comp);
+        	
+        	
+        	ModelDetail comp2 = new ModelDetail(model);
+        	modelDetails.put(model.getId(), comp2);
         }
         
         for (final Site site: Database.getInstance().getSites()) {
@@ -229,7 +234,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 	public void run() {
 		Database.getInstance().addObserver(this);
 		
-        final JFrame mainFrame = new JFrame("Video & Picture Library");
+        final JFrame mainFrame = new JFrame("Video Library");
         
 		/*com.apple.eawt.Application application = com.apple.eawt.Application.getApplication();
 		application.setQuitHandler(new QuitHandler() {
@@ -254,6 +259,14 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 			}
         });
         menu.add(databaseItem);
+        JMenuItem saveItem = new JMenuItem("Save database", KeyEvent.VK_S);
+        databaseItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        databaseItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Database.getInstance().saveDatabase();
+			}
+        });
+        menu.add(saveItem);
         menuBar.add(menu);
         mainFrame.setJMenuBar(menuBar);
         
@@ -346,6 +359,9 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
         	});
         	modelPanels.put(model.getId(), comp);
 			mouseClickedSite(sitePanels.get(activeSite.getId()), activeSite);
+			
+			final ModelDetail comp2 = new ModelDetail(model);
+			modelDetails.put(model.getId(), comp2);
 		}
 		else if (action == Action.CREATE_SET) {
 			final Set set = (Set)object;

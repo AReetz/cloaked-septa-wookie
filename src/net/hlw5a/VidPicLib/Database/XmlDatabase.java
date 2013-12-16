@@ -16,6 +16,10 @@ import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -32,6 +36,7 @@ public class XmlDatabase extends Database {
     private static final String SETS_FILE = "sets.xml";
     private static final String STATES_FILE = "states.xml";
     private static final String PASSES_FILE = "passes.xml";
+    private static final String MAPPINGS_FILE = "mappings.xml";
     private static final String SETTINGS_FILE = "settings.xml";
 
     private String databaseRoot;
@@ -47,11 +52,13 @@ public class XmlDatabase extends Database {
 	        LoadSets();
 	        LoadStates();
 	        LoadPasses();
+	        LoadMappings();
         }
         catch (IOException e) { e.printStackTrace(); }
         catch (ParserConfigurationException e) { e.printStackTrace(); }
         catch (SAXException e) { e.printStackTrace(); }
         catch (ParseException e) { e.printStackTrace(); }
+        catch (XPathExpressionException e) { e.printStackTrace(); }
     }
     
     public void saveDatabase() {
@@ -60,6 +67,7 @@ public class XmlDatabase extends Database {
             SaveSites();
             SaveSets();
 			SavePasses();
+			SaveMappings();
 		}
         catch (IOException e) { e.printStackTrace(); }
     }
@@ -180,6 +188,24 @@ public class XmlDatabase extends Database {
 		settings.put("contentfolder", getAttributeText((Element) doc.getElementsByTagName("contentfolder").item(0), "value"));		
     }
     
+    private void LoadMappings() throws IOException, ParserConfigurationException, SAXException, ParseException, XPathExpressionException {
+    	File xmlFile = new File(databaseRoot + MAPPINGS_FILE);
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document doc = db.parse(xmlFile);
+
+		XPathFactory xpathFactory = XPathFactory.newInstance();
+		XPath xpath = xpathFactory.newXPath();
+		NodeList xmlCompleted = (NodeList) xpath.evaluate("mappings/completed/boolean", doc, XPathConstants.NODESET);
+        for (int i = 0; i < xmlCompleted.getLength(); i++)
+        {
+        	Element passElement = (Element) xmlCompleted.item(i);
+            Integer model = Integer.parseInt(getAttributeText(passElement, "model"));
+            Integer site = Integer.parseInt(getAttributeText(passElement, "site"));
+            mappingsModelSite.put(models.get(model), sites.get(site), true);
+        }
+    }
+    
     private void SaveModels() throws IOException {
         StringBuilder xmlString = new StringBuilder(String.format("<?xml version=\"1.0\" encoding=\"utf-8\" ?>%n"));
         xmlString.append(String.format("<models>%n"));
@@ -239,7 +265,6 @@ public class XmlDatabase extends Database {
         StringBuilder xmlString = new StringBuilder(String.format("<?xml version=\"1.0\" encoding=\"utf-8\" ?>%n"));
         xmlString.append(String.format("<passes>%n"));
         for (Pass pass : passes.values()) {
-        	
         	xmlString.append(String.format("  <pass id=\"%d\" site=\"%d\" state=\"%d\">%n", pass.getId(), pass.getSite().getId(), pass.getState().ordinal() + 1));
         	xmlString.append(String.format("    <username>%s</username>%n", pass.getUsername()));
         	xmlString.append(String.format("    <password>%s</password>%n", pass.getPassword()));
@@ -249,6 +274,21 @@ public class XmlDatabase extends Database {
         xmlString.append(String.format("</passes>%n"));
         (new File(databaseRoot + PASSES_FILE)).renameTo(new File(databaseRoot + PASSES_FILE + ".backup"));
         BufferedWriter xmlFile = new BufferedWriter(new FileWriter(databaseRoot + PASSES_FILE));
+        xmlFile.write(xmlString.toString());
+        xmlFile.close();
+    }
+    
+    private void SaveMappings() throws IOException {
+        StringBuilder xmlString = new StringBuilder(String.format("<?xml version=\"1.0\" encoding=\"utf-8\" ?>%n"));
+        xmlString.append(String.format("<mappings>%n"));
+        xmlString.append(String.format("  <completed>%n"));
+        for (Key2<Model, Site> keys : mappingsModelSite.keySet()) {       	
+        	xmlString.append(String.format("    <boolean model=\"%d\" site=\"%d\" value=\"1\" />%n", keys.key1.getId(), keys.key2.getId()));
+        }
+        xmlString.append(String.format("  </completed>%n"));
+        xmlString.append(String.format("</mappings>%n"));
+        (new File(databaseRoot + MAPPINGS_FILE)).renameTo(new File(databaseRoot + MAPPINGS_FILE + ".backup"));
+        BufferedWriter xmlFile = new BufferedWriter(new FileWriter(databaseRoot + MAPPINGS_FILE));
         xmlFile.write(xmlString.toString());
         xmlFile.close();
     }
