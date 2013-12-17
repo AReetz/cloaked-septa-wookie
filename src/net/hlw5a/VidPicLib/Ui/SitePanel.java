@@ -24,9 +24,15 @@ public class SitePanel extends JPanel {
 	public SitePanel(Site site) {
 		this.site = site;
 		
+		JLabel id = new JLabel(String.valueOf(this.site.getId()), JLabel.CENTER);
+		id.setFont(VPLStyles.SMALL);
+		id.setPreferredSize(new Dimension(VPLStyles.TEXTFIELD_HEIGHT, VPLStyles.TEXTFIELD_HEIGHT));
+		id.setOpaque(true);
+		id.setBackground(VPLStyles.TEXT_BACKGROUND);
+		
 		JLabel name = new JLabel(this.site.getName(), JLabel.CENTER);
 		name.setFont(VPLStyles.BOLD);
-		name.setPreferredSize(new Dimension(VPLStyles.COMPONENT_WIDTH, VPLStyles.TEXTFIELD_HEIGHT));
+		name.setPreferredSize(new Dimension(VPLStyles.COMPONENT_WIDTH - VPLStyles.TEXTFIELD_HEIGHT - 5, VPLStyles.TEXTFIELD_HEIGHT));
 		name.setOpaque(true);
 		name.setBackground(VPLStyles.TEXT_BACKGROUND);
 		
@@ -47,6 +53,7 @@ public class SitePanel extends JPanel {
 		JLabel picture = new JLabel(new ImageIcon(this.site.getImage()));
 		picture.setPreferredSize(new Dimension(VPLStyles.COMPONENT_WIDTH, 64));
 		
+		this.add(id);
 		this.add(name);
 		this.add(url);
 		this.add(picture);

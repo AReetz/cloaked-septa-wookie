@@ -28,10 +28,6 @@ public abstract class Database extends Observable {
 		CREATE_PASS,
 		DELETE_PASS
 	};
-	
-	public enum Mapping {
-		COMPLETED
-	};
 
 	public class ObservableObject {
 		private Action action;
@@ -76,8 +72,15 @@ public abstract class Database extends Observable {
     public State getState(Integer Id) { return states.get(Id); }
     public Vector<State> getStates() { return new Vector<State>(states.values()); }
     
-    public Boolean getModelSiteMapping(Model model, Site site) { Boolean ret = mappingsModelSite.get(model, site); if (ret == null) return false; else return ret; }
-    public void setModelSiteMapping(Model model, Site site, Boolean value) { if (value) mappingsModelSite.put(model, site, value); else mappingsModelSite.remove(model, site); }
+    public Boolean getModelSiteMapping(Model model, Site site) {
+    	Boolean ret = mappingsModelSite.get(model, site);
+    	if (ret == null) return false;
+    	else return ret;
+    	}
+    public void setModelSiteMapping(Model model, Site site, Boolean value) {
+    	if (value) mappingsModelSite.put(model, site, value);
+    	else mappingsModelSite.remove(model, site);
+    	}
     
     public String getSetting(String setting) { return settings.get(setting); }
 

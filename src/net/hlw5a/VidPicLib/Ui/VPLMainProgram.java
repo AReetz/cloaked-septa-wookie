@@ -46,6 +46,7 @@ import net.hlw5a.VidPicLib.Database.Database;
 import net.hlw5a.VidPicLib.Database.DataSort;
 import net.hlw5a.VidPicLib.Database.Database.Action;
 import net.hlw5a.VidPicLib.Database.Database.ObservableObject;
+import net.hlw5a.VidPicLib.Ui.ModelPanel.Mode;
 
 public class VPLMainProgram extends JPanel implements Runnable, Observer {
 
@@ -57,7 +58,6 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 	private VPLTabPanel tabSitesPasses;
 	private VPLTabPanel tabModelsSets;
 	private Map<Integer, ModelPanel> modelPanels = new TreeMap<Integer, ModelPanel>();
-	private Map<Integer, ModelDetail> modelDetails = new TreeMap<Integer, ModelDetail>();
 	private Map<Integer, SitePanel> sitePanels = new TreeMap<Integer, SitePanel>();
 	private Map<Integer, SetPanel> setPanels = new TreeMap<Integer, SetPanel>();
 	private Map<Integer, PassPanel> passPanels = new TreeMap<Integer, PassPanel>();
@@ -128,7 +128,9 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 	        }
 			Collections.sort(tmpList2, new DataSort.Models.ByName());
 			for (Model model: tmpList2) {
-        		activeTab.add(modelDetails.get(model.getId()), VPLTabPanel.RIGHT);
+				ModelPanel mp = modelPanels.get(model.getId());
+        		activeTab.add(mp, VPLTabPanel.RIGHT);
+        		mp.setMode(Mode.SHORT);
 	        }
 			activeTab.add(new ModelNew(), VPLTabPanel.RIGHT);
 			tabsPane.repaint();
@@ -200,10 +202,6 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
         		public void mouseClicked(MouseEvent e) { VPLMainProgram.this.mouseClickedModel(comp, model); }
         	});
         	modelPanels.put(model.getId(), comp);
-        	
-        	
-        	ModelDetail comp2 = new ModelDetail(model);
-        	modelDetails.put(model.getId(), comp2);
         }
         
         for (final Site site: Database.getInstance().getSites()) {
@@ -236,7 +234,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 		
         final JFrame mainFrame = new JFrame("Video Library");
         
-		/*com.apple.eawt.Application application = com.apple.eawt.Application.getApplication();
+		com.apple.eawt.Application application = com.apple.eawt.Application.getApplication();
 		application.setQuitHandler(new QuitHandler() {
 			public void handleQuitRequestWith(QuitEvent arg0, QuitResponse arg1) { mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING)); }
 		});
@@ -247,7 +245,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 			application.setDockIconImage(icon);
 		} catch (IOException e) {
 			e.printStackTrace();
-		}*/
+		}
 
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("Options");
@@ -288,7 +286,9 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 					List<Model> tmpList = Database.getInstance().getModels();
 					Collections.sort(tmpList, new DataSort.Models.ByName());
 					for (Model model: tmpList) {
-						activeTab.add(modelPanels.get(model.getId()), VPLTabPanel.LEFT);
+						ModelPanel mp = modelPanels.get(model.getId());
+						activeTab.add(mp, VPLTabPanel.LEFT);
+						mp.setMode(Mode.DETAIL);
 					}
 					if (activeModel != null) {
 						mouseClickedModel(modelPanels.get(activeModel.getId()), activeModel);
@@ -359,9 +359,6 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
         	});
         	modelPanels.put(model.getId(), comp);
 			mouseClickedSite(sitePanels.get(activeSite.getId()), activeSite);
-			
-			final ModelDetail comp2 = new ModelDetail(model);
-			modelDetails.put(model.getId(), comp2);
 		}
 		else if (action == Action.CREATE_SET) {
 			final Set set = (Set)object;

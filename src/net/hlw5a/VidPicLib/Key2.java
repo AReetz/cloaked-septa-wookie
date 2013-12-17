@@ -1,6 +1,6 @@
 package net.hlw5a.VidPicLib;
 
-public class Key2<A, B> implements Comparable {
+public class Key2<A, B> implements Comparable<Key2<A, B>> {
 
 	public A key1;
 	public B key2;
@@ -11,11 +11,12 @@ public class Key2<A, B> implements Comparable {
 	}
 
 	@Override
-	public int compareTo(Object o) {
-		if (o == null) return -1;
-		if (!(o instanceof Key2<?, ?>)) return -1;
-		Key2<A, B> dko = (Key2<A, B>)o;
-		if (!dko.key1.equals(this.key1) || !dko.key2.equals(this.key2)) return -1;
+	public int compareTo(Key2<A, B> o) {
+		if (o == null) return 1;
+		if (this.key1.hashCode() > o.key1.hashCode()) return 1;
+		else if (this.key1.hashCode() < o.key1.hashCode()) return -1;
+		if (this.key2.hashCode() > o.key2.hashCode()) return 1;
+		else if (this.key2.hashCode() < o.key2.hashCode()) return -1;
 		return 0;
 	}
 }
