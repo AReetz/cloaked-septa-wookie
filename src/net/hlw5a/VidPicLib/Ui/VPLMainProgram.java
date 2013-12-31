@@ -58,6 +58,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 	private VPLTabPanel tabSitesPasses;
 	private VPLTabPanel tabModelsSets;
 	private Map<Integer, ModelPanel> modelPanels = new TreeMap<Integer, ModelPanel>();
+	private Map<Integer, ModelInfoPanel> modelInfoPanels = new TreeMap<Integer, ModelInfoPanel>();
 	private Map<Integer, SitePanel> sitePanels = new TreeMap<Integer, SitePanel>();
 	private Map<Integer, SetPanel> setPanels = new TreeMap<Integer, SetPanel>();
 	private Map<Integer, PassPanel> passPanels = new TreeMap<Integer, PassPanel>();
@@ -96,7 +97,8 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 		}
 		else if (activeTab == tabSitesPasses) {
 		}
-		else if (activeTab == tabModelsSets) {;
+		else if (activeTab == tabModelsSets) {
+			activeTab.add(modelInfoPanels.get(Model.getId()), VPLTabPanel.RIGHT);
 			List<Set> tmpList = Database.getInstance().getSets();
 			Collections.sort(tmpList, new DataSort.Sets.BySiteNameAndDate());
 	        for (Set set: tmpList) {
@@ -202,6 +204,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
         		public void mouseClicked(MouseEvent e) { VPLMainProgram.this.mouseClickedModel(comp, model); }
         	});
         	modelPanels.put(model.getId(), comp);
+        	modelInfoPanels.put(model.getId(), new ModelInfoPanel(model));
         }
         
         for (final Site site: Database.getInstance().getSites()) {
@@ -234,17 +237,19 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 		
         final JFrame mainFrame = new JFrame("Video Library");
         
-		com.apple.eawt.Application application = com.apple.eawt.Application.getApplication();
-		application.setQuitHandler(new QuitHandler() {
-			public void handleQuitRequestWith(QuitEvent arg0, QuitResponse arg1) { mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING)); }
-		});
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		InputStream input = classLoader.getResourceAsStream("icon.png");
-		try {
-			Image icon = ImageIO.read(input);
-			application.setDockIconImage(icon);
-		} catch (IOException e) {
-			e.printStackTrace();
+        String os = System.getProperty("os.name");
+        if (os.equals("Mac OS X")) {
+			com.apple.eawt.Application application = com.apple.eawt.Application.getApplication();
+			application.setQuitHandler(new QuitHandler() {
+				public void handleQuitRequestWith(QuitEvent arg0, QuitResponse arg1) { mainFrame.dispatchEvent(new WindowEvent(mainFrame, WindowEvent.WINDOW_CLOSING)); }
+			});
+			InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream("icon.png");
+			try {
+				Image icon = ImageIO.read(input);
+				application.setDockIconImage(icon);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
         JMenuBar menuBar = new JMenuBar();
@@ -258,8 +263,8 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
         });
         menu.add(databaseItem);
         JMenuItem saveItem = new JMenuItem("Save database", KeyEvent.VK_S);
-        databaseItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        databaseItem.addActionListener(new ActionListener() {
+        saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        saveItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Database.getInstance().saveDatabase();
 			}
@@ -306,7 +311,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
         
         mainFrame.add(tabsPane);
         mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        mainFrame.setTitle("Video & Picture Library");
+        mainFrame.setTitle("Video Library");
         mainFrame.pack();
         mainFrame.setVisible(true);
         mainFrame.setExtendedState(mainFrame.getExtendedState() | JFrame.MAXIMIZED_BOTH);

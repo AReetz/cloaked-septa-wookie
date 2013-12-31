@@ -12,8 +12,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import net.hlw5a.VidPicLib.Pass.State;
 import net.hlw5a.VidPicLib.Site;
-import net.hlw5a.VidPicLib.State;
 import net.hlw5a.VidPicLib.Database.Database;
 
 public class PassNew extends JPanel {

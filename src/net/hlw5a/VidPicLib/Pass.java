@@ -30,4 +30,11 @@ public class Pass {
         this.state = state;
         this.site = site;
     }
+    
+    public enum State {
+    	unknown,
+    	valid,
+    	disabled,
+    	expired
+    }
 }

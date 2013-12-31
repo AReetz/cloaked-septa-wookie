@@ -10,6 +10,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -28,9 +29,16 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import net.hlw5a.VidPicLib.*;
+import net.hlw5a.VidPicLib.Model.Built;
+import net.hlw5a.VidPicLib.Model.Cup;
+import net.hlw5a.VidPicLib.Model.Race;
+import net.hlw5a.VidPicLib.Pass.State;
 
 public class XmlDatabase extends Database {
 
+	private static final String RACES_FILE = "races.xml";
+	private static final String BUILTS_FILE = "builts.xml";
+	private static final String CUPS_FILE = "cups.xml";
     private static final String MODELS_FILE = "models.xml";
     private static final String SITES_FILE = "sites.xml";
     private static final String SETS_FILE = "sets.xml";
@@ -47,6 +55,9 @@ public class XmlDatabase extends Database {
     	databaseRoot = String.format("C:\\Users\\Adrian\\Documents\\Source Code\\VidPicLib2\\VidPicLibGUI\\Database\\");
         try {
         	LoadSettings();
+        	LoadRaces();
+        	LoadBuilts();
+        	LoadCups();
 			LoadModels();
 	        LoadSites();
 	        LoadSets();
@@ -80,6 +91,54 @@ public class XmlDatabase extends Database {
     public Image getImage(String imageName) throws IOException {
     	return ImageIO.read(new File(databaseRoot + imageName));
     }
+    
+    private void LoadRaces() throws ParserConfigurationException, SAXException, IOException {
+    	File xmlFile = new File(databaseRoot + RACES_FILE);
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document doc = db.parse(xmlFile);
+		
+		NodeList xmlRaces = doc.getElementsByTagName("races").item(0).getChildNodes();
+        for (int i = 0; i < xmlRaces.getLength(); i++) {
+        	if (xmlRaces.item(i).getNodeType() == Node.ELEMENT_NODE) {
+            	Element stateElement = (Element) xmlRaces.item(i);
+            	Integer id = Integer.parseInt(getAttributeText(stateElement,"id"));
+            	races.put(id, Race.valueOf(stateElement.getNodeName()));
+        	}
+        }
+    }
+    
+    private void LoadBuilts() throws ParserConfigurationException, SAXException, IOException {
+    	File xmlFile = new File(databaseRoot + BUILTS_FILE);
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document doc = db.parse(xmlFile);
+		
+		NodeList xmlBuilts = doc.getElementsByTagName("builts").item(0).getChildNodes();
+        for (int i = 0; i < xmlBuilts.getLength(); i++) {
+        	if (xmlBuilts.item(i).getNodeType() == Node.ELEMENT_NODE) {
+            	Element stateElement = (Element) xmlBuilts.item(i);
+            	Integer id = Integer.parseInt(getAttributeText(stateElement,"id"));
+            	builts.put(id, Built.valueOf(stateElement.getNodeName()));
+        	}
+        }
+    }
+    
+    private void LoadCups() throws ParserConfigurationException, SAXException, IOException {
+    	File xmlFile = new File(databaseRoot + CUPS_FILE);
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document doc = db.parse(xmlFile);
+		
+		NodeList xmlCups = doc.getElementsByTagName("cups").item(0).getChildNodes();
+        for (int i = 0; i < xmlCups.getLength(); i++) {
+        	if (xmlCups.item(i).getNodeType() == Node.ELEMENT_NODE) {
+            	Element stateElement = (Element) xmlCups.item(i);
+            	Integer id = Integer.parseInt(getAttributeText(stateElement,"id"));
+            	cups.put(id, Cup.valueOf(stateElement.getNodeName()));
+        	}
+        }
+    }
 
     private void LoadModels() throws IOException, ParserConfigurationException, SAXException {
     	File xmlFile = new File(databaseRoot + MODELS_FILE);
@@ -95,7 +154,7 @@ public class XmlDatabase extends Database {
             String name = getChildText(modelElement, "name").firstElement();
             String imageName = getChildText(modelElement, "image").firstElement();
             Image image = ImageIO.read(new File(databaseRoot + imageName));
-            models.put(id, new Model(id, name, imageName, image));
+            models.put(id, new Model(id, name, imageName, image, Race.unknown, Built.unknown, new GregorianCalendar(1980, 1, 1).getTime(), "XX-XX-XX", Cup.unknown));
         }
     }
 
@@ -212,6 +271,10 @@ public class XmlDatabase extends Database {
         for (Model model : getModels()) {
         	xmlString.append(String.format("  <model id=\"%d\">%n", model.getId()));
         	xmlString.append(String.format("    <name>%s</name>%n", model.getName()));
+        	xmlString.append(String.format("    <race>%s</race>%n", model.getRace()));
+        	xmlString.append(String.format("    <built>%s</built>%n", model.getBuilt()));
+        	xmlString.append(String.format("    <measures>%s</measures>%n", model.getMeasurements()));
+        	xmlString.append(String.format("    <cup>%s</cup>%n", model.getCup()));
         	xmlString.append(String.format("    <image>%s</image>%n", model.getImageName()));
         	xmlString.append(String.format("  </model>%n"));
         }

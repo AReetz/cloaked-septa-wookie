@@ -15,11 +15,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
 
 import net.hlw5a.VidPicLib.*;
+import net.hlw5a.VidPicLib.Model.Built;
+import net.hlw5a.VidPicLib.Model.Cup;
+import net.hlw5a.VidPicLib.Model.Race;
+import net.hlw5a.VidPicLib.Pass.State;
 
 public class MysqlDatabase extends Database {
 
@@ -77,7 +82,7 @@ public class MysqlDatabase extends Database {
 		ResultSet modelsResult = modelsStatement.executeQuery("SELECT * FROM models");
     	while (modelsResult.next()) {
     		existingModels.add(modelsResult.getInt("id"));
-    		models.put(modelsResult.getInt("id"), new Model(modelsResult.getInt("id"), modelsResult.getString("name"), null, ImageIO.read(modelsResult.getBlob("image").getBinaryStream())));
+    		models.put(modelsResult.getInt("id"), new Model(modelsResult.getInt("id"), modelsResult.getString("name"), null, ImageIO.read(modelsResult.getBlob("image").getBinaryStream()), Race.unknown, Built.unknown, new GregorianCalendar(1980, 1, 1).getTime(), "XX-XX-XX", Cup.unknown));
     	}
     }
 
