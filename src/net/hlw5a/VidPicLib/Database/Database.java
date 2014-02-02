@@ -1,7 +1,6 @@
 package net.hlw5a.VidPicLib.Database;
 
 import java.awt.Image;
-import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Collections;
@@ -11,8 +10,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.TreeMap;
 import java.util.Vector;
-
-import javax.imageio.ImageIO;
 
 import net.hlw5a.VidPicLib.Key2Map;
 import net.hlw5a.VidPicLib.Model;
@@ -25,25 +22,7 @@ import net.hlw5a.VidPicLib.Model.Built;
 import net.hlw5a.VidPicLib.Model.Race;
 
 public abstract class Database extends Observable {
-	
-	public enum Action {
-		CREATE_MODEL,
-		CREATE_SET,
-		CREATE_PASS,
-		DELETE_PASS
-	};
 
-	public class ObservableObject {
-		private Action action;
-		private Object object;
-		public Action getAction() { return action; }
-		public Object getObject() { return object; }
-		public ObservableObject(Action action, Object object) {
-			this.action = action;
-			this.object = object;
-		}
-	}
-	
 	private static Database instance;
 
 	public static Database getInstance() {
@@ -92,11 +71,12 @@ public abstract class Database extends Observable {
     	Boolean ret = mappingsModelSite.get(model, site);
     	if (ret == null) return false;
     	else return ret;
-    	}
+    }
+    
     public void setModelSiteMapping(Model model, Site site, Boolean value) {
     	if (value) mappingsModelSite.put(model, site, value);
     	else mappingsModelSite.remove(model, site);
-    	}
+    }
     
     public String getSetting(String setting) { return settings.get(setting); }
 
@@ -110,28 +90,28 @@ public abstract class Database extends Observable {
         Pass pass = new Pass(id, username, password, Calendar.getInstance().getTime(), State.unknown, site);
         passes.put(id, pass);
         setChanged();
-        notifyObservers(new ObservableObject(Action.CREATE_PASS, pass));
+        notifyObservers(new ObservableObject(ObservableObject.Action.CREATE_PASS, pass));
     }
     
     public void createModel(String modelName, String imageName, Race race, Built built, Cup cup) throws IOException {
     	Integer id = Collections.max(models.keySet()) + 1;
-    	Model model = new Model(id, modelName, imageName, ImageIO.read(new File(imageName)), race, built, new GregorianCalendar(1980, 1, 1).getTime(), "XX-XX-XX", cup);
+    	Model model = new Model(id, modelName, imageName, getImage(imageName), race, built, new GregorianCalendar(1980, 1, 1).getTime(), "XX-XX-XX", cup);
     	models.put(id, model);
     	setChanged();
-    	notifyObservers(new ObservableObject(Action.CREATE_MODEL, model));
+    	notifyObservers(new ObservableObject(ObservableObject.Action.CREATE_MODEL, model));
     }
     
     public void createSet(String setName, String setNumber, Date date, String imageName, Model mainModel, Vector<Model> models, Site site) throws IOException {
     	Integer id = Collections.max(sets.keySet()) + 1;
-    	Set set = new Set(id, setNumber, setName, date, imageName, getImage(imageName), mainModel, models, site);
+    	Set set = new Set(id, setName, setNumber, date, imageName, getImage(imageName), mainModel, models, site);
     	sets.put(id, set);
     	setChanged();
-    	notifyObservers(new ObservableObject(Action.CREATE_SET, set));
+    	notifyObservers(new ObservableObject(ObservableObject.Action.CREATE_SET, set));
     }
 
     public void deletePass(Pass pass) {
         passes.remove(pass.getId());
         setChanged();
-    	notifyObservers(new ObservableObject(Action.DELETE_PASS, pass));
+    	notifyObservers(new ObservableObject(ObservableObject.Action.DELETE_PASS, pass));
     }
 }

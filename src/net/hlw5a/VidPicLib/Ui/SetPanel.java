@@ -3,8 +3,6 @@ package net.hlw5a.VidPicLib.Ui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
@@ -24,19 +22,20 @@ public class SetPanel extends JPanel {
 
 	private static final long serialVersionUID = 7529093994691453362L;
 	private Set set;
+	private JLabel id;
 	
 	public int getId() {
 		return set.getId();
 	}
 	
-	public SetPanel(Set set, boolean videoExists) {
+	public SetPanel(Set set) {
 		this.set = set;
 				
-		JLabel id = new JLabel(String.valueOf(this.set.getId()), JLabel.CENTER);
+		id = new JLabel(String.valueOf(this.set.getId()), JLabel.CENTER);
 		id.setFont(VPLStyles.SMALL);
 		id.setPreferredSize(new Dimension(VPLStyles.TEXTFIELD_HEIGHT, VPLStyles.TEXTFIELD_HEIGHT));
 		id.setOpaque(true);
-		if (videoExists) { id.setBackground(VPLStyles.TEXT_BACKGROUND); } else { id.setBackground(Color.red); }
+		if (set.getFileExists()) { id.setBackground(VPLStyles.TEXT_BACKGROUND); } else { id.setBackground(Color.red); }
 		
 		final JLabel name = new JLabel(this.set.getName(), JLabel.CENTER);
 		name.setFont(VPLStyles.BOLD);
@@ -89,5 +88,9 @@ public class SetPanel extends JPanel {
 		this.add(picture);
 		this.setBackground(VPLStyles.CONTAINER_BACKGROUND);
 		this.setPreferredSize(new Dimension(VPLStyles.CONTROL_WIDTH, 366));
+	}
+	
+	public void setFileExist() {
+		if (set.getFileExists()) { id.setBackground(VPLStyles.TEXT_BACKGROUND); } else { id.setBackground(Color.red); }
 	}
 }

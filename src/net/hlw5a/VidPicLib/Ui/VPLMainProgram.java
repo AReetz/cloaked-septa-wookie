@@ -10,8 +10,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -21,14 +19,15 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.TreeMap;
 import java.util.Vector;
-import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
+import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.event.ChangeEvent;
@@ -44,9 +43,9 @@ import net.hlw5a.VidPicLib.Set;
 import net.hlw5a.VidPicLib.Site;
 import net.hlw5a.VidPicLib.Database.Database;
 import net.hlw5a.VidPicLib.Database.DataSort;
-import net.hlw5a.VidPicLib.Database.Database.Action;
-import net.hlw5a.VidPicLib.Database.Database.ObservableObject;
-import net.hlw5a.VidPicLib.Ui.ModelPanel.Mode;
+import net.hlw5a.VidPicLib.Database.Filebase;
+import net.hlw5a.VidPicLib.Database.ObservableObject;
+import net.hlw5a.VidPicLib.Database.ObservableObject.Action;
 
 public class VPLMainProgram extends JPanel implements Runnable, Observer {
 
@@ -65,12 +64,13 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 	private Site activeSite;
 	private Model activeModel;
 	private VPLTabPanel activeTab;
-
+	private ModelView modelView = ModelView.MainSite;
+	
 	private void mouseClicked(Component comp) {
-		tabSitesModels.removeAll(VPLTabPanel.RIGHT);
-		tabSitesSets.removeAll(VPLTabPanel.RIGHT);
-		tabSitesPasses.removeAll(VPLTabPanel.RIGHT);
-		tabModelsSets.removeAll(VPLTabPanel.RIGHT);
+		tabSitesModels.removeAll(VPLTabPanel.Panel.Right);
+		tabSitesSets.removeAll(VPLTabPanel.Panel.Right);
+		tabSitesPasses.removeAll(VPLTabPanel.Panel.Right);
+		tabModelsSets.removeAll(VPLTabPanel.Panel.Right);
 		for (ModelPanel model : modelPanels.values()) {
 			model.setBackground(VPLStyles.CONTAINER_BACKGROUND);
 		}
@@ -98,17 +98,17 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 		else if (activeTab == tabSitesPasses) {
 		}
 		else if (activeTab == tabModelsSets) {
-			activeTab.add(modelInfoPanels.get(Model.getId()), VPLTabPanel.RIGHT);
+			activeTab.add(modelInfoPanels.get(Model.getId()), VPLTabPanel.Panel.Right);
 			List<Set> tmpList = Database.getInstance().getSets();
 			Collections.sort(tmpList, new DataSort.Sets.BySiteNameAndDate());
 	        for (Set set: tmpList) {
 	        	for (Model model : set.getModels()) {
 		        	if (Model == model) {
-		        		activeTab.add(setPanels.get(set.getId()), VPLTabPanel.RIGHT);
+		        		activeTab.add(setPanels.get(set.getId()), VPLTabPanel.Panel.Right);
 		        	}
 	        	}
 	        }
-	        activeTab.add(new SetNew_Model(Model), VPLTabPanel.RIGHT);
+	        activeTab.add(new SetNew_Model(Model), VPLTabPanel.Panel.Right);
 	        tabsPane.repaint();
 		}
 	}
@@ -117,24 +117,44 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 		mouseClicked(comp);
 		activeSite = Site;
 		if (activeTab == tabSitesModels) {
-			List<Set> tmpList = Database.getInstance().getSets();
-			List<Model> tmpList2 = new Vector<Model>();
-			for (Set set: tmpList) {
-	        	if (Site == set.getSite()) {
-	        		for (Model model : set.getModels()) {
-	        			if (!tmpList2.contains(model)) {
-	        				tmpList2.add(model);
+			List<Model> tmpModelList = new Vector<Model>();
+			if (modelView == ModelView.MainSite) {
+				List<Set> tmpSetList = Database.getInstance().getSets();
+				for (Set set: tmpSetList) {
+		        	if (Site == set.getSite()) {		        		
+	        			if (!tmpModelList.contains(set.getMainModel())) {
+	        				tmpModelList.add(set.getMainModel());
 	        			}
-	        		}
-	           	}
-	        }
-			Collections.sort(tmpList2, new DataSort.Models.ByName());
-			for (Model model: tmpList2) {
+		           	}
+		        }
+			}
+			if (modelView == ModelView.MainAll) {
+				List<Set> tmpSetList = Database.getInstance().getSets();
+				for (Set set: tmpSetList) {
+        			if (!tmpModelList.contains(set.getMainModel())) {
+        				tmpModelList.add(set.getMainModel());
+        			}
+		        }
+			}
+			else if (modelView == ModelView.Appearing) {
+				List<Set> tmpSetList = Database.getInstance().getSets();
+				for (Set set: tmpSetList) {
+		        	if (Site == set.getSite()) {
+		        		for (Model model : set.getModels()) {
+		        			if (!tmpModelList.contains(model)) {
+		        				tmpModelList.add(model);
+		        			}
+		        		}
+		           	}
+		        }
+			}
+			Collections.sort(tmpModelList, new DataSort.Models.ByName());
+			for (Model model: tmpModelList) {
 				ModelPanel mp = modelPanels.get(model.getId());
-        		activeTab.add(mp, VPLTabPanel.RIGHT);
-        		mp.setMode(Mode.SHORT);
+				mp.setSite(Site);
+        		activeTab.add(mp, VPLTabPanel.Panel.Right);
 	        }
-			activeTab.add(new ModelNew(), VPLTabPanel.RIGHT);
+			activeTab.add(new ModelNew(), VPLTabPanel.Panel.Right);
 			tabsPane.repaint();
 		}
 		else if (activeTab == tabSitesSets) {
@@ -142,10 +162,10 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 			Collections.sort(tmpList, new DataSort.Sets.ByModelNameAndDate());
 	        for (Set set: tmpList) {
 	        	if (Site == set.getSite()) {
-	        		activeTab.add(setPanels.get(set.getId()), VPLTabPanel.RIGHT);
+	        		activeTab.add(setPanels.get(set.getId()), VPLTabPanel.Panel.Right);
 	        	}
 	        }
-	        activeTab.add(new SetNew_Site(Site), VPLTabPanel.RIGHT);
+	        activeTab.add(new SetNew_Site(Site), VPLTabPanel.Panel.Right);
 	        tabsPane.repaint();
 		}
 		else if (activeTab == tabSitesPasses) {
@@ -153,10 +173,10 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 			Collections.sort(tmpList, new DataSort.Passes.ByDate());
 	        for (Pass pass: tmpList) {
 	        	if (Site == pass.getSite()) {
-	        		activeTab.add(passPanels.get(pass.getId()), VPLTabPanel.RIGHT);
+	        		activeTab.add(passPanels.get(pass.getId()), VPLTabPanel.Panel.Right);
 	        	}
 	        }
-	        tabSitesPasses.add(new PassNew(Site), VPLTabPanel.RIGHT);
+	        tabSitesPasses.add(new PassNew(Site), VPLTabPanel.Panel.Right);
 	        tabsPane.repaint();
 		}
 		else if (activeTab == tabModelsSets) {
@@ -224,7 +244,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
         }
         
         for (final Set set : Database.getInstance().getSets()) {
-        	final SetPanel comp = new SetPanel(set, DoesVideoExist(set));
+        	final SetPanel comp = new SetPanel(set);
         	comp.addMouseListener(new MouseAdapter() {
         		public void mouseClicked(MouseEvent e) { VPLMainProgram.this.mouseClickedSet(comp, set); }
         	});
@@ -234,6 +254,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 	
 	public void run() {
 		Database.getInstance().addObserver(this);
+		Filebase.getInstance().addObserver(this);
 		
         final JFrame mainFrame = new JFrame("Video Library");
         
@@ -253,7 +274,48 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 		}
 
         JMenuBar menuBar = new JMenuBar();
-        JMenu menu = new JMenu("Options");
+        JMenu menuView = new JMenu("View");
+        JMenu sites_model_Submenu = new JMenu("Sites x Models");
+        ButtonGroup sites_model_group = new ButtonGroup();
+        JRadioButtonMenuItem sites_model_main_Item = new JRadioButtonMenuItem("Main models (site)");
+        sites_model_main_Item.setSelected(true);
+        sites_model_main_Item.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				modelView = ModelView.MainSite;
+				mouseClickedSite(sitePanels.get(activeSite.getId()), activeSite);
+			}
+        });
+        sites_model_Submenu.add(sites_model_main_Item);
+        sites_model_group.add(sites_model_main_Item);
+        JRadioButtonMenuItem sites_model_appear_Item = new JRadioButtonMenuItem("Main models (all)");
+        sites_model_appear_Item.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				modelView = ModelView.MainAll;
+				mouseClickedSite(sitePanels.get(activeSite.getId()), activeSite);
+			}
+        });
+        sites_model_Submenu.add(sites_model_appear_Item);
+        sites_model_group.add(sites_model_appear_Item);
+        JRadioButtonMenuItem sites_model_all_Item = new JRadioButtonMenuItem("Appearing models (site)");
+        sites_model_all_Item.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				modelView = ModelView.Appearing;
+				mouseClickedSite(sitePanels.get(activeSite.getId()), activeSite);
+			}
+        });
+        sites_model_Submenu.add(sites_model_all_Item);
+        sites_model_group.add(sites_model_all_Item);
+        menuView.add(sites_model_Submenu);
+        menuBar.add(menuView);
+        JMenu menuOptions = new JMenu("Options");
+        JMenuItem rescanItem = new JMenuItem("Rescan for files", KeyEvent.VK_R);
+        rescanItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
+        rescanItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Filebase.getInstance().rescanFiles();
+			}
+        });
+        menuOptions.add(rescanItem);
         JMenuItem databaseItem = new JMenuItem("Open database", KeyEvent.VK_D);
         databaseItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         databaseItem.addActionListener(new ActionListener() {
@@ -261,7 +323,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 				Database.getInstance().openDatabase();
 			}
         });
-        menu.add(databaseItem);
+        menuOptions.add(databaseItem);
         JMenuItem saveItem = new JMenuItem("Save database", KeyEvent.VK_S);
         saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
         saveItem.addActionListener(new ActionListener() {
@@ -269,8 +331,8 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 				Database.getInstance().saveDatabase();
 			}
         });
-        menu.add(saveItem);
-        menuBar.add(menu);
+        menuOptions.add(saveItem);
+        menuBar.add(menuOptions);
         mainFrame.setJMenuBar(menuBar);
         
         tabsPane = new JTabbedPane();
@@ -281,7 +343,7 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 					List<Site> tmpList = Database.getInstance().getSites();
 					Collections.sort(tmpList, new DataSort.Sites.ByName());
 					for (Site site: tmpList) {
-						activeTab.add(sitePanels.get(site.getId()), VPLTabPanel.LEFT);
+						activeTab.add(sitePanels.get(site.getId()), VPLTabPanel.Panel.Left);
 					}
 					if (activeSite != null) {
 						mouseClickedSite(sitePanels.get(activeSite.getId()), activeSite);
@@ -292,8 +354,8 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 					Collections.sort(tmpList, new DataSort.Models.ByName());
 					for (Model model: tmpList) {
 						ModelPanel mp = modelPanels.get(model.getId());
-						activeTab.add(mp, VPLTabPanel.LEFT);
-						mp.setMode(Mode.DETAIL);
+						mp.setSite(null);
+						activeTab.add(mp, VPLTabPanel.Panel.Left);
 					}
 					if (activeModel != null) {
 						mouseClickedModel(modelPanels.get(activeModel.getId()), activeModel);
@@ -319,39 +381,6 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
         	public void windowClosed(WindowEvent e) { Database.getInstance().saveDatabase(); }
         });
 	}
-	
-	private Boolean DoesVideoExist(final Set set) {
-		File rootDirectory = new File(Database.getInstance().getSetting("contentfolder"));
-		
-		FilenameFilter siteFilter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				String siteName = set.getSite().getName();
-				if (name.contains(siteName)) { return true; } else { return false; }
-			}
-		};
-		
-		FilenameFilter setFilter = new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				Pattern setNumberPattern = Pattern.compile("[\\D]+");
-				String modelName = set.getMainModel().getName();
-				String setNumber = setNumberPattern.matcher(set.getName()).replaceAll("");
-				if (name.contains(modelName) && name.contains(setNumber)) {
-					return true;
-					} else {
-						return false; 
-						}
-			}
-		};
-		
-		File[] subDirectories = rootDirectory.listFiles(siteFilter);
-		if (subDirectories.length > 0) {
-			File[] files = subDirectories[0].listFiles(setFilter);
-			if (files.length > 0) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	public void update(Observable arg0, Object observableObject) {
 		Action action = ((ObservableObject)observableObject).getAction();
@@ -367,7 +396,8 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 		}
 		else if (action == Action.CREATE_SET) {
 			final Set set = (Set)object;
-        	final SetPanel comp = new SetPanel(set, DoesVideoExist(set));
+			Filebase.getInstance().findFile(set);
+        	final SetPanel comp = new SetPanel(set);
         	comp.addMouseListener(new MouseAdapter() {
         		public void mouseClicked(MouseEvent e) { VPLMainProgram.this.mouseClickedSet(comp, set); }
         	});
@@ -389,5 +419,15 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 			passPanels.remove(pass.getId());
 			mouseClickedSite(sitePanels.get(activeSite.getId()), activeSite);
 		}
+		else if (action == Action.FILE_FOUND) {
+			final Set set = (Set)object;
+			setPanels.get(set.getId()).setFileExist();
+		}
+	}
+	
+	private enum ModelView {
+		MainSite,
+		MainAll,
+		Appearing
 	}
 }

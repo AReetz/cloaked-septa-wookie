@@ -3,7 +3,6 @@ package net.hlw5a.VidPicLib;
 import java.awt.Image;
 import java.util.Date;
 import java.util.Vector;
-import java.util.regex.Pattern;
 
 public class Set {
 
@@ -17,6 +16,9 @@ public class Set {
 	private Vector<Model> models;
 	private Site site;
 	
+	private Boolean fileExists;
+	private String fileName;
+	
     public Integer getId() { return id; }
     public String getName() { return name; }
     public String getNumber() { return number; }
@@ -26,6 +28,10 @@ public class Set {
     public Model getMainModel() { return mainModel; }
     public Vector<Model> getModels() { return models; }
     public Site getSite() { return site; }
+    
+    public Boolean getFileExists() { return fileExists; }
+    public String getFileName() { return fileName; }
+    public void setFileName(String fileName) { this.fileName = fileName; this.fileExists = true; }
 
     public Set(Integer id, String name, String number, Date date, String imageName, Image image, Model mainModel, Vector<Model> models, Site site)
     {
@@ -39,11 +45,13 @@ public class Set {
         this.models = models;
         this.site = site;
         
-        if (!models.contains(mainModel)) models.add(0, mainModel);
+        this.fileExists = false;
+        
+        /*if (!models.contains(mainModel)) models.add(0, mainModel);
         if (number == "") {
         	Pattern setNumberPattern = Pattern.compile("[\\D]+");
 			String setNumber = setNumberPattern.matcher(name).replaceAll("");
 			this.number = setNumber;
-        }
+        }*/
     }
 }

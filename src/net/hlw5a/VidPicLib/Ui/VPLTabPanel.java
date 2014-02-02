@@ -44,29 +44,31 @@ public class VPLTabPanel extends JPanel {
 		this.add(rightScroll);
 	}
 	
-	public Component add(Component comp, int index) {
-		switch (index) {
-		case LEFT:
+	public Component add(Component comp, Panel side) {
+		switch (side) {
+		case Left:
 			m_LeftContent.add(comp);
 			break;
-		case RIGHT:
+		case Right:
 			m_RightContent.add(comp);
 			break;
 		}
 		return comp;
 	}
 	
-	public void removeAll(int index) {
-		switch (index) {
-		case LEFT:
+	public void removeAll(Panel side) {
+		switch (side) {
+		case Left:
 			m_LeftContent.removeAll();
 			break;
-		case RIGHT:
+		case Right:
 			m_RightContent.removeAll();
 			break;
 		}
 	}
 	
-	public final static int LEFT = 1;
-	public final static int RIGHT = 2;
+	public enum Panel {
+		Left,
+		Right
+	}
 }

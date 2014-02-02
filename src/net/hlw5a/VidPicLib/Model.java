@@ -1,6 +1,7 @@
 package net.hlw5a.VidPicLib;
 
 import java.awt.Image;
+import java.util.Calendar;
 import java.util.Date;
 
 public class Model {
@@ -21,7 +22,8 @@ public class Model {
 	public Image getImage() { return image; }
 	public Race getRace() { return race; }
 	public Built getBuilt() { return built; }
-	public Integer getAge() { return -1; }
+	public Date getBirthdate() { return birthdate; }
+	public Integer getAge() { return (int)((Calendar.getInstance().getTime().getTime() - birthdate.getTime()) / 1000 / 60 / 60 / 24 / 365); }
 	public String getMeasurements() { return measurements; }
 	public Cup getCup() { return cup; }
 	

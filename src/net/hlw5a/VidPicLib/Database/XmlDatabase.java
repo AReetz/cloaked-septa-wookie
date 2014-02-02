@@ -10,7 +10,6 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -50,9 +49,9 @@ public class XmlDatabase extends Database {
     private String databaseRoot;
 
     public XmlDatabase() {
-    	//databaseRoot = String.format("%s%sLibrary%sApplication Support%snet.hlw5a.VidPicLib%s", System.getProperty("user.home"), File.separator, File.separator, File.separator, File.separator);
+    	databaseRoot = String.format("%s%sLibrary%sApplication Support%snet.hlw5a.VidPicLib%s", System.getProperty("user.home"), File.separator, File.separator, File.separator, File.separator);
         //databaseRoot = String.format("%s%sDatabase%s", System.getProperty("user.dir"), File.separator, File.separator);
-    	databaseRoot = String.format("C:\\Users\\Adrian\\Documents\\Source Code\\VidPicLib2\\VidPicLibGUI\\Database\\");
+    	//databaseRoot = String.format("C:\\Users\\Adrian\\Documents\\Source Code\\VidPicLib2\\VidPicLibGUI\\Database\\");
         try {
         	LoadSettings();
         	LoadRaces();
@@ -140,7 +139,7 @@ public class XmlDatabase extends Database {
         }
     }
 
-    private void LoadModels() throws IOException, ParserConfigurationException, SAXException {
+    private void LoadModels() throws IOException, ParserConfigurationException, SAXException, ParseException {
     	File xmlFile = new File(databaseRoot + MODELS_FILE);
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db = dbf.newDocumentBuilder();
@@ -152,9 +151,14 @@ public class XmlDatabase extends Database {
         	Element modelElement = (Element) xmlModels.item(i);
             Integer id = Integer.parseInt(getAttributeText(modelElement, "id"));
             String name = getChildText(modelElement, "name").firstElement();
+            Race race = getRace(Integer.parseInt(getChildText(modelElement, "race").firstElement()));
+            Built built = getBuilt(Integer.parseInt(getChildText(modelElement, "built").firstElement()));
+            Date birthdate = (new SimpleDateFormat("yyyy-MM-dd")).parse(getChildText(modelElement, "birthdate").firstElement());
+            String measurements = getChildText(modelElement, "measurements").firstElement();
+            Cup cup = getCup(Integer.parseInt(getChildText(modelElement, "cup").firstElement()));
             String imageName = getChildText(modelElement, "image").firstElement();
             Image image = ImageIO.read(new File(databaseRoot + imageName));
-            models.put(id, new Model(id, name, imageName, image, Race.unknown, Built.unknown, new GregorianCalendar(1980, 1, 1).getTime(), "XX-XX-XX", Cup.unknown));
+            models.put(id, new Model(id, name, imageName, image, race, built, birthdate, measurements, cup));
         }
     }
 
@@ -271,10 +275,11 @@ public class XmlDatabase extends Database {
         for (Model model : getModels()) {
         	xmlString.append(String.format("  <model id=\"%d\">%n", model.getId()));
         	xmlString.append(String.format("    <name>%s</name>%n", model.getName()));
-        	xmlString.append(String.format("    <race>%s</race>%n", model.getRace()));
-        	xmlString.append(String.format("    <built>%s</built>%n", model.getBuilt()));
-        	xmlString.append(String.format("    <measures>%s</measures>%n", model.getMeasurements()));
-        	xmlString.append(String.format("    <cup>%s</cup>%n", model.getCup()));
+        	xmlString.append(String.format("    <race>%s</race>%n", model.getRace().ordinal()));
+        	xmlString.append(String.format("    <built>%s</built>%n", model.getBuilt().ordinal()));
+        	xmlString.append(String.format("    <birthdate>%s</birthdate>%n", (new SimpleDateFormat("yyyy-MM-dd")).format(model.getBirthdate())));
+        	xmlString.append(String.format("    <measurements>%s</measurements>%n", model.getMeasurements()));
+        	xmlString.append(String.format("    <cup>%s</cup>%n", model.getCup().ordinal()));
         	xmlString.append(String.format("    <image>%s</image>%n", model.getImageName()));
         	xmlString.append(String.format("  </model>%n"));
         }
