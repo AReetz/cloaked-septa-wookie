@@ -20,7 +20,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
-import net.hlw5a.VidPicLib.Model;
 import net.hlw5a.VidPicLib.Model.Built;
 import net.hlw5a.VidPicLib.Model.Cup;
 import net.hlw5a.VidPicLib.Model.Race;
