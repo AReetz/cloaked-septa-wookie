@@ -1,4 +1,4 @@
-package net.hlw5a.VidPicLib;
+package net.hlw5a.VidPicLib.Database;
 
 import java.util.TreeMap;
 

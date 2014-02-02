@@ -11,7 +11,6 @@ import java.util.Observable;
 import java.util.TreeMap;
 import java.util.Vector;
 
-import net.hlw5a.VidPicLib.Key2Map;
 import net.hlw5a.VidPicLib.Model;
 import net.hlw5a.VidPicLib.Model.Cup;
 import net.hlw5a.VidPicLib.Pass;

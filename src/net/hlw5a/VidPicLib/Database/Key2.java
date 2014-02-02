@@ -1,4 +1,4 @@
-package net.hlw5a.VidPicLib;
+package net.hlw5a.VidPicLib.Database;
 
 public class Key2<A, B> implements Comparable<Key2<A, B>> {
 

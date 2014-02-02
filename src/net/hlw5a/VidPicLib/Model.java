@@ -22,10 +22,14 @@ public class Model {
 	public Image getImage() { return image; }
 	public Race getRace() { return race; }
 	public Built getBuilt() { return built; }
+	public Integer getAge() { Calendar bd = Calendar.getInstance(); bd.setTime(birthdate); return Calendar.getInstance().get(Calendar.YEAR) -  bd.get(Calendar.YEAR); }
 	public Date getBirthdate() { return birthdate; }
-	public Integer getAge() { return (int)((Calendar.getInstance().getTime().getTime() - birthdate.getTime()) / 1000 / 60 / 60 / 24 / 365); }
 	public String getMeasurements() { return measurements; }
 	public Cup getCup() { return cup; }
+	
+	public void setRace(Race race) { this.race = race; }
+	public void setBuilt(Built built) { this.built = built; }
+	public void setCup(Cup cup) { this.cup = cup; }
 	
 	public Model(Integer id, String name, String imageName, Image image, Race race, Built built, Date birthdate, String measurements, Cup cup)
 	{
@@ -39,10 +43,14 @@ public class Model {
 		this.measurements = measurements;
 		this.cup = cup;
 	}
-	
-	public void setRace(Race race) { this.race = race; }
-	public void setBuilt(Built built) { this.built = built; }
-	public void setCup(Cup cup) { this.cup = cup; }
+
+	public enum Built {
+		unknown,
+		Petite,
+		Normal,
+		Curvy,
+		Chubby
+	}
 	
 	public enum Cup {
 		unknown,
@@ -53,7 +61,7 @@ public class Model {
 		D,
 		DD,
 		F,
-		G_up
+		G_up,
 	}
 	
 	public enum Race {
@@ -62,13 +70,5 @@ public class Model {
 		Black,
 		Latin,
 		White
-	}
-	
-	public enum Built {
-		unknown,
-		Petite,
-		Normal,
-		Curvy,
-		Chubby
 	}
 }
