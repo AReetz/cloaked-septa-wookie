@@ -49,9 +49,7 @@ public class XmlDatabase extends Database {
     private String databaseRoot;
 
     public XmlDatabase() {
-    	databaseRoot = String.format("%s%sLibrary%sApplication Support%snet.hlw5a.VidPicLib%s", System.getProperty("user.home"), File.separator, File.separator, File.separator, File.separator);
-        //databaseRoot = String.format("%s%sDatabase%s", System.getProperty("user.dir"), File.separator, File.separator);
-    	//databaseRoot = String.format("C:\\Users\\Adrian\\Documents\\Source Code\\VidPicLib2\\VidPicLibGUI\\Database\\");
+    	databaseRoot = String.format("C:\\Users\\Adrian\\Documents\\Source Code\\VidPicLib2\\VidPicLibGUI\\Database\\");
         try {
         	LoadSettings();
         	LoadRaces();

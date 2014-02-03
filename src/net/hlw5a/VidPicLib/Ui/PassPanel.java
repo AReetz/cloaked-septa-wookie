@@ -66,7 +66,7 @@ public class PassPanel extends JPanel {
 			}
 		});
 		
-		final JComboBox state = new JComboBox(Database.getInstance().getStates());
+		final JComboBox<State> state = new JComboBox<State>(Database.getInstance().getStates());
 		state.setSelectedItem(this.pass.getState());
 		state.setFont(VPLStyles.REGULAR);
 		state.setPreferredSize(new Dimension(142, VPLStyles.COMBOBOX_HEIGHT));

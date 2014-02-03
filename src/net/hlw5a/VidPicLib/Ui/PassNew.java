@@ -39,7 +39,7 @@ public class PassNew extends JPanel {
 		date.setOpaque(true);
 		date.setBackground(VPLStyles.TEXT_BACKGROUND);
 		
-		JComboBox state = new JComboBox(State.values());
+		JComboBox<State> state = new JComboBox<State>(Database.getInstance().getStates());
 		state.setSelectedItem(State.unknown);
 		state.setEnabled(false);
 		state.setFont(VPLStyles.REGULAR);

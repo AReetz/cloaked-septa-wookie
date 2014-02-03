@@ -94,16 +94,16 @@ public class SetNew_Site extends JPanel {
 			public void focusGained(FocusEvent arg0) { if (imageName.getText().equals("set picture name")) { imageName.setText(".jpg"); imageName.setCaretPosition(0); } }
 		});
 		
-		final JComboBox setMainModel = new JComboBox(tmpList);
+		final JComboBox<Model> setMainModel = new JComboBox<Model>(tmpList);
 		setMainModel.setFont(VPLStyles.ITALIC);
 		setMainModel.setPreferredSize(new Dimension(VPLStyles.COMPONENT_WIDTH, VPLStyles.COMBOBOX_HEIGHT));
 		setMainModel.setOpaque(true);
 		setMainModel.setBackground(VPLStyles.TEXT_BACKGROUND);
-		setMainModel.setRenderer(new ListCellRenderer() {
+		setMainModel.setRenderer(new ListCellRenderer<Model>() {
 			protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			public Component getListCellRendererComponent(JList<? extends Model> list, Model value, int index, boolean isSelected, boolean cellHasFocus) {
 				JLabel renderer = (JLabel)defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-				if (value != null) renderer.setText(((Model)value).getName());
+				if (value != null) renderer.setText(value.getName());
 			    return renderer;
 			}
 		});
@@ -114,15 +114,15 @@ public class SetNew_Site extends JPanel {
 			}
 		});
 		
-		final JList setModels = new JList(tmpList);
+		final JList<Model> setModels = new JList<Model>(tmpList);
 		setModels.setFont(VPLStyles.ITALIC);
 		setModels.setOpaque(true);
 		setModels.setBackground(VPLStyles.TEXT_BACKGROUND);
-		setModels.setCellRenderer(new ListCellRenderer() {
+		setModels.setCellRenderer(new ListCellRenderer<Model>() {
 			protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			public Component getListCellRendererComponent(JList<? extends Model> list, Model value, int index, boolean isSelected, boolean cellHasFocus) {
 				JLabel renderer = (JLabel)defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-				if (value != null) renderer.setText(((Model)value).getName());
+				if (value != null) renderer.setText(value.getName());
 			    return renderer;
 			}
 		});
@@ -142,8 +142,8 @@ public class SetNew_Site extends JPanel {
 			public void mouseClicked(MouseEvent arg0) {
 				try {
 					Vector<Model> models = new Vector<Model>();
-					for (Object model : setModels.getSelectedValues()) { models.add((Model)model); }
-					Database.getInstance().createSet(setName.getText(), setNumber.getText(), (new SimpleDateFormat("yyyy-MM-dd")).parse(setDate.getText()), imageName.getText(), (Model)setMainModel.getItemAt(setMainModel.getSelectedIndex()), models, site);
+					for (Model model : setModels.getSelectedValuesList()) { models.add(model); }
+					Database.getInstance().createSet(setName.getText(), setNumber.getText(), (new SimpleDateFormat("yyyy-MM-dd")).parse(setDate.getText()), imageName.getText(), setMainModel.getItemAt(setMainModel.getSelectedIndex()), models, site);
 				}
 				catch (IOException e) { e.printStackTrace(); }
 				catch (ParseException e) {  e.printStackTrace(); }

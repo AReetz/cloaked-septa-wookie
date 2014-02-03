@@ -57,17 +57,17 @@ public class SetPanel extends JPanel {
 		date.setOpaque(true);
 		date.setBackground(VPLStyles.TEXT_BACKGROUND);
 		
-		JComboBox model = new JComboBox(this.set.getModels());
+		JComboBox<Model> model = new JComboBox<Model>(this.set.getModels());
 		model.setSelectedItem(this.set.getMainModel());
 		model.setFont(VPLStyles.REGULAR);
 		model.setPreferredSize(new Dimension(VPLStyles.COMPONENT_WIDTH, VPLStyles.COMBOBOX_HEIGHT));
 		model.setOpaque(true);
 		model.setBackground(VPLStyles.TEXT_BACKGROUND);
-		model.setRenderer(new ListCellRenderer() {
+		model.setRenderer(new ListCellRenderer<Model>() {
 			protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-			public Component getListCellRendererComponent(JList arg0, Object arg1, int arg2, boolean arg3, boolean arg4) {
-				JLabel renderer = (JLabel)defaultRenderer.getListCellRendererComponent(arg0, arg1, arg2, arg3, arg4);
-				renderer.setText(((Model)arg1).getName());
+			public Component getListCellRendererComponent(JList<? extends Model> list, Model value, int index, boolean isSelected, boolean cellHasFocus) {
+				JLabel renderer = (JLabel)defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				renderer.setText(value.getName());
 			    return renderer;
 			}
 		});

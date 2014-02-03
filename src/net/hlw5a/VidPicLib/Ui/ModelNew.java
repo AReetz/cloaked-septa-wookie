@@ -60,47 +60,47 @@ public class ModelNew extends JPanel {
 			public void changedUpdate(DocumentEvent de) { }
 		});
 		
-		final JComboBox modelRace = new JComboBox(Database.getInstance().getRaces());
+		final JComboBox<Race> modelRace = new JComboBox<Race>(Database.getInstance().getRaces());
 		modelRace.setSelectedItem(Database.getInstance().getRace(0));
 		modelRace.setFont(VPLStyles.REGULAR);
 		modelRace.setPreferredSize(new Dimension(VPLStyles.COMPONENT_WIDTH / 3 + 14, VPLStyles.COMBOBOX_HEIGHT));
 		modelRace.setOpaque(true);
 		modelRace.setBackground(VPLStyles.TEXT_BACKGROUND);
-		modelRace.setRenderer(new ListCellRenderer() {
+		modelRace.setRenderer(new ListCellRenderer<Race>() {
 			protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-			public Component getListCellRendererComponent(JList arg0, Object arg1, int arg2, boolean arg3, boolean arg4) {
-				JLabel renderer = (JLabel)defaultRenderer.getListCellRendererComponent(arg0, arg1, arg2, arg3, arg4);
-				renderer.setText(((Race)arg1).name());
+			public Component getListCellRendererComponent(JList<? extends Race> list, Race value, int index, boolean isSelected, boolean cellHasFocus) {
+				JLabel renderer = (JLabel)defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				renderer.setText(value.name());
 			    return renderer;
 			}
 		});
 		
-		final JComboBox modelBuilt = new JComboBox(Database.getInstance().getBuilts());
+		final JComboBox<Built> modelBuilt = new JComboBox<Built>(Database.getInstance().getBuilts());
 		modelBuilt.setSelectedItem(Database.getInstance().getBuilt(0));
 		modelBuilt.setFont(VPLStyles.REGULAR);
 		modelBuilt.setPreferredSize(new Dimension(VPLStyles.COMPONENT_WIDTH / 3 + 14, VPLStyles.COMBOBOX_HEIGHT));
 		modelBuilt.setOpaque(true);
 		modelBuilt.setBackground(VPLStyles.TEXT_BACKGROUND);
-		modelBuilt.setRenderer(new ListCellRenderer() {
+		modelBuilt.setRenderer(new ListCellRenderer<Built>() {
 			protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-			public Component getListCellRendererComponent(JList arg0, Object arg1, int arg2, boolean arg3, boolean arg4) {
-				JLabel renderer = (JLabel)defaultRenderer.getListCellRendererComponent(arg0, arg1, arg2, arg3, arg4);
-				renderer.setText(((Built)arg1).name());
+			public Component getListCellRendererComponent(JList<? extends Built> list, Built value, int index, boolean isSelected, boolean cellHasFocus) {
+				JLabel renderer = (JLabel)defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				renderer.setText(value.name());
 			    return renderer;
 			}
 		});
 		
-		final JComboBox modelCup = new JComboBox(Database.getInstance().getCups());
+		final JComboBox<Cup> modelCup = new JComboBox<Cup>(Database.getInstance().getCups());
 		modelCup.setSelectedItem(Database.getInstance().getCup(0));
 		modelCup.setFont(VPLStyles.REGULAR);
 		modelCup.setPreferredSize(new Dimension(VPLStyles.COMPONENT_WIDTH / 3 + 14, VPLStyles.COMBOBOX_HEIGHT));
 		modelCup.setOpaque(true);
 		modelCup.setBackground(VPLStyles.TEXT_BACKGROUND);
-		modelCup.setRenderer(new ListCellRenderer() {
+		modelCup.setRenderer(new ListCellRenderer<Cup>() {
 			protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-			public Component getListCellRendererComponent(JList arg0, Object arg1, int arg2, boolean arg3, boolean arg4) {
-				JLabel renderer = (JLabel)defaultRenderer.getListCellRendererComponent(arg0, arg1, arg2, arg3, arg4);
-				renderer.setText(((Cup)arg1).name());
+			public Component getListCellRendererComponent(JList<? extends Cup> list, Cup value, int index, boolean isSelected, boolean cellHasFocus) {
+				JLabel renderer = (JLabel)defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				renderer.setText(value.name());
 			    return renderer;
 			}
 		});
