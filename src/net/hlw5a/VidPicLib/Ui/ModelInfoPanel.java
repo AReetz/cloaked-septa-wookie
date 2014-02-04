@@ -62,33 +62,33 @@ public class ModelInfoPanel extends JPanel  {
 			modelRace.setOpaque(true);
 			modelRace.setBackground(VPLStyles.TEXT_BACKGROUND);*/
 			
-			JComboBox modelRace = new JComboBox(Model.Race.values());
+			JComboBox<Race> modelRace = new JComboBox<Race>(Database.getInstance().getRaces());
 			modelRace.setSelectedItem(model.getRace());
 			modelRace.setFont(VPLStyles.REGULAR);
 			modelRace.setPreferredSize(new Dimension(VPLStyles.COMPONENT_WIDTH / 3 + 14, VPLStyles.COMBOBOX_HEIGHT));
 			modelRace.setOpaque(true);
 			modelRace.setBackground(VPLStyles.TEXT_BACKGROUND);
-			modelRace.setRenderer(new ListCellRenderer() {
+			modelRace.setRenderer(new ListCellRenderer<Race>() {
 				protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-				public Component getListCellRendererComponent(JList arg0, Object arg1, int arg2, boolean arg3, boolean arg4) {
-					JLabel renderer = (JLabel)defaultRenderer.getListCellRendererComponent(arg0, arg1, arg2, arg3, arg4);
-					renderer.setText(((Race)arg1).name());
+				public Component getListCellRendererComponent(JList<? extends Race> list, Race value, int index, boolean isSelected, boolean cellHasFocus) {
+					JLabel renderer = (JLabel)defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+					renderer.setText(value.name());
 				    return renderer;
 				}
 			});
 			modelRace.addItemListener(new ItemListener() { public void itemStateChanged(ItemEvent arg0) { if (arg0.getStateChange() == ItemEvent.SELECTED) { model.setRace((Race)arg0.getItem()); } } });
 			
-			JComboBox modelBuilt = new JComboBox(Model.Built.values());
+			JComboBox<Built> modelBuilt = new JComboBox<Built>(Database.getInstance().getBuilts());
 			modelBuilt.setSelectedItem(model.getBuilt());
 			modelBuilt.setFont(VPLStyles.REGULAR);
 			modelBuilt.setPreferredSize(new Dimension(VPLStyles.COMPONENT_WIDTH / 3 + 14, VPLStyles.COMBOBOX_HEIGHT));
 			modelBuilt.setOpaque(true);
 			modelBuilt.setBackground(VPLStyles.TEXT_BACKGROUND);
-			modelBuilt.setRenderer(new ListCellRenderer() {
+			modelBuilt.setRenderer(new ListCellRenderer<Built>() {
 				protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-				public Component getListCellRendererComponent(JList arg0, Object arg1, int arg2, boolean arg3, boolean arg4) {
-					JLabel renderer = (JLabel)defaultRenderer.getListCellRendererComponent(arg0, arg1, arg2, arg3, arg4);
-					renderer.setText(((Built)arg1).name());
+				public Component getListCellRendererComponent(JList<? extends Built> list, Built value, int index, boolean isSelected, boolean cellHasFocus) {
+					JLabel renderer = (JLabel)defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+					renderer.setText(value.name());
 				    return renderer;
 				}
 			});
@@ -106,17 +106,17 @@ public class ModelInfoPanel extends JPanel  {
 			modelMeasurements.setOpaque(true);
 			modelMeasurements.setBackground(VPLStyles.TEXT_BACKGROUND);
 			
-			JComboBox modelCup = new JComboBox(Model.Cup.values());
+			JComboBox<Cup> modelCup = new JComboBox<Cup>(Database.getInstance().getCups());
 			modelCup.setSelectedItem(model.getCup());
 			modelCup.setFont(VPLStyles.REGULAR);
 			modelCup.setPreferredSize(new Dimension(VPLStyles.COMPONENT_WIDTH / 3 + 14, VPLStyles.COMBOBOX_HEIGHT));
 			modelCup.setOpaque(true);
 			modelCup.setBackground(VPLStyles.TEXT_BACKGROUND);
-			modelCup.setRenderer(new ListCellRenderer() {
+			modelCup.setRenderer(new ListCellRenderer<Cup>() {
 				protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-				public Component getListCellRendererComponent(JList arg0, Object arg1, int arg2, boolean arg3, boolean arg4) {
-					JLabel renderer = (JLabel)defaultRenderer.getListCellRendererComponent(arg0, arg1, arg2, arg3, arg4);
-					renderer.setText(((Cup)arg1).name().replace("_up", "+"));
+				public Component getListCellRendererComponent(JList<? extends Cup> list, Cup value, int index, boolean isSelected, boolean cellHasFocus) {
+					JLabel renderer = (JLabel)defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+					renderer.setText(value.name().replace("_up", "+"));
 				    return renderer;
 				}
 			});

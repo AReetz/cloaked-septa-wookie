@@ -195,12 +195,20 @@ public class XmlDatabase extends Database {
             Date date = (new SimpleDateFormat("yyyy-MM-dd")).parse(getChildText(setElement, "date").firstElement());
             String imageName = getChildText(setElement, "image").firstElement();
             Image image = ImageIO.read(new File(databaseRoot + imageName));
+            Site site = getSite(Integer.parseInt(getAttributeText(setElement, "site")));
             Model mainModel = getModel(Integer.parseInt(getChildText(setElement, "mainmodel").firstElement()));
             Vector<Model> models = new Vector<Model>();
             for (String str : getChildText(setElement, "model")) {
             	models.add(getModel(Integer.parseInt(str)));
             }
-            sets.put(id, new Set(id, name, number, date, imageName, image, mainModel, models, getSite(Integer.parseInt(getAttributeText(setElement, "site")))));
+            Set set = new Set(id, name, number, date, imageName, image, mainModel, models, site);
+            sets.put(id, set);
+            site.addSet(set);
+            for (Model model : set.getModels()) {
+            	site.addModel(model);
+            	model.addSet(set);
+            	model.addSite(site);
+            }
         }
     }
 

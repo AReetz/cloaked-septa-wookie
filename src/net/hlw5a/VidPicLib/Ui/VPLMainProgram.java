@@ -41,6 +41,7 @@ import net.hlw5a.VidPicLib.Model;
 import net.hlw5a.VidPicLib.Pass;
 import net.hlw5a.VidPicLib.Set;
 import net.hlw5a.VidPicLib.Site;
+import net.hlw5a.VidPicLib.Database.DataFilter;
 import net.hlw5a.VidPicLib.Database.Database;
 import net.hlw5a.VidPicLib.Database.DataSort;
 import net.hlw5a.VidPicLib.Database.Filebase;
@@ -101,12 +102,8 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 			activeTab.add(modelInfoPanels.get(Model.getId()), VPLTabPanel.Panel.Right);
 			List<Set> tmpList = Database.getInstance().getSets();
 			Collections.sort(tmpList, new DataSort.Sets.BySiteNameAndDate());
-	        for (Set set: tmpList) {
-	        	for (Model model : set.getModels()) {
-		        	if (Model == model) {
-		        		activeTab.add(setPanels.get(set.getId()), VPLTabPanel.Panel.Right);
-		        	}
-	        	}
+	        for (Set set: Model.getSets()) {
+        		activeTab.add(setPanels.get(set.getId()), VPLTabPanel.Panel.Right);
 	        }
 	        activeTab.add(new SetNew_Model(Model), VPLTabPanel.Panel.Right);
 	        tabsPane.repaint();
@@ -119,34 +116,17 @@ public class VPLMainProgram extends JPanel implements Runnable, Observer {
 		if (activeTab == tabSitesModels) {
 			List<Model> tmpModelList = new Vector<Model>();
 			if (modelView == ModelView.MainSite) {
-				List<Set> tmpSetList = Database.getInstance().getSets();
-				for (Set set: tmpSetList) {
-		        	if (Site == set.getSite()) {		        		
-	        			if (!tmpModelList.contains(set.getMainModel())) {
-	        				tmpModelList.add(set.getMainModel());
-	        			}
-		           	}
-		        }
+				tmpModelList = Site.getModels();
+				DataFilter.Models dfm = new DataFilter.Models();
+				dfm.filter(dfm.new MainModelFilter(), tmpModelList, null);
 			}
 			if (modelView == ModelView.MainAll) {
-				List<Set> tmpSetList = Database.getInstance().getSets();
-				for (Set set: tmpSetList) {
-        			if (!tmpModelList.contains(set.getMainModel())) {
-        				tmpModelList.add(set.getMainModel());
-        			}
-		        }
+				tmpModelList = Database.getInstance().getModels();
+				DataFilter.Models dfm = new DataFilter.Models();
+				dfm.filter(dfm.new MainModelFilter(), tmpModelList, null);
 			}
 			else if (modelView == ModelView.Appearing) {
-				List<Set> tmpSetList = Database.getInstance().getSets();
-				for (Set set: tmpSetList) {
-		        	if (Site == set.getSite()) {
-		        		for (Model model : set.getModels()) {
-		        			if (!tmpModelList.contains(model)) {
-		        				tmpModelList.add(model);
-		        			}
-		        		}
-		           	}
-		        }
+				tmpModelList = Site.getModels();
 			}
 			Collections.sort(tmpModelList, new DataSort.Models.ByName());
 			for (Model model: tmpModelList) {
